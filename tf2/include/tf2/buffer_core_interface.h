@@ -34,6 +34,7 @@
 #include "geometry_msgs/msg/transform_stamped.hpp"
 
 #include "tf2/time.h"
+#include "tf2/transform_datatypes.h"
 #include "tf2/visibility_control.h"
 
 namespace tf2
@@ -67,7 +68,7 @@ public:
    * \return The transform between the frames.
    */
   TF2_PUBLIC
-  virtual tf2::Transform
+  virtual tf2::Stamped<tf2::Transform>
   lookupTransformTf2(
     const std::string & target_frame,
     const std::string & source_frame,
@@ -98,7 +99,7 @@ public:
    * \return The transform between the frames.
    */
   TF2_PUBLIC
-  virtual tf2::Transform
+  virtual tf2::Stamped<tf2::Transform>
   lookupTransformTf2(
     const std::string & target_frame,
     const tf2::TimePoint & target_time,
