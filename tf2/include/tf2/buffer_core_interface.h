@@ -31,7 +31,9 @@
 #include <string>
 #include <vector>
 
+#if !TF2_ROS_FREE_CORE
 #include "geometry_msgs/msg/transform_stamped.hpp"
+#endif
 
 #include "tf2/time.h"
 #include "tf2/transform_datatypes.h"
@@ -74,6 +76,7 @@ public:
     const std::string & source_frame,
     const tf2::TimePoint & time) const = 0;
 
+#if !TF2_ROS_FREE_CORE
   /**
    * \brief Get the transform between two frames by frame ID.
    * \param target_frame The frame to which data should be transformed.
@@ -87,6 +90,7 @@ public:
     const std::string & target_frame,
     const std::string & source_frame,
     const tf2::TimePoint & time) const = 0;
+#endif
 
   /**
    * \brief Get the transform between two frames by frame ID assuming fixed frame.
@@ -107,6 +111,7 @@ public:
     const tf2::TimePoint & source_time,
     const std::string & fixed_frame) const = 0;
 
+#if !TF2_ROS_FREE_CORE
   /**
    * \brief Get the transform between two frames by frame ID assuming fixed frame.
    * \param target_frame The frame to which data should be transformed.
@@ -125,6 +130,7 @@ public:
     const std::string & source_frame,
     const tf2::TimePoint & source_time,
     const std::string & fixed_frame) const = 0;
+#endif
 
   /**
    * \brief Test if a transform is possible.

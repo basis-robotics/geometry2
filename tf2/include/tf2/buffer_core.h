@@ -45,9 +45,11 @@
 #include <vector>
 
 #include "LinearMath/Transform.h"
+#if !TF2_ROS_FREE_CORE
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "geometry_msgs/msg/velocity_stamped.hpp"
-#include "rcutils/logging_macros.h"
+#endif
+
 #include "tf2/buffer_core_interface.h"
 #include "tf2/exceptions.h"
 #include "tf2/transform_storage.h"
@@ -111,6 +113,7 @@ public:
   TF2_PUBLIC
   void clear() override;
 
+#if !TF2_ROS_FREE_CORE
   /** \brief Add transform information to the tf data structure
    * \param transform The transform to store
    * \param authority The source of the information for this transform
@@ -121,9 +124,9 @@ public:
   bool setTransform(
     const geometry_msgs::msg::TransformStamped & transform,
     const std::string & authority, bool is_static = false);
+#endif
 
   /*********** Accessors *************/
-
   /**
    * \brief Get the transform between two frames by frame ID.
    * \param target_frame The frame to which data should be transformed.
@@ -141,6 +144,7 @@ public:
     const std::string & source_frame,
     const tf2::TimePoint & time) const override;
 
+#if !TF2_ROS_FREE_CORE
   /** \brief Get the transform between two frames by frame ID.
    * \param target_frame The frame to which data should be transformed
    * \param source_frame The frame where the data originated
@@ -155,6 +159,7 @@ public:
   lookupTransform(
     const std::string & target_frame, const std::string & source_frame,
     const TimePoint & time) const override;
+#endif
 
   /**
    * \brief Get the transform between two frames by frame ID assuming fixed frame.
@@ -178,6 +183,7 @@ public:
     const tf2::TimePoint & source_time,
     const std::string & fixed_frame) const override;
 
+#if !TF2_ROS_FREE_CORE
   /** \brief Get the transform between two frames by frame ID assuming fixed frame.
    * \param target_frame The frame to which data should be transformed
    * \param target_time The time to which the data should be transformed. (0 will get the latest)
@@ -196,16 +202,19 @@ public:
     const std::string & target_frame, const TimePoint & target_time,
     const std::string & source_frame, const TimePoint & source_time,
     const std::string & fixed_frame) const override;
+#endif
 
   TF2_PUBLIC
   tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>> lookupVelocityTf2(
     const std::string & tracking_frame, const std::string & observation_frame,
     const TimePoint & time, const tf2::Duration & averaging_interval) const;
 
+#if !TF2_ROS_FREE_CORE
   TF2_PUBLIC
   geometry_msgs::msg::VelocityStamped lookupVelocity(
     const std::string & tracking_frame, const std::string & observation_frame,
     const TimePoint & time, const tf2::Duration & averaging_interval) const;
+#endif
 
   /** \brief Lookup the velocity of the moving_frame in the reference_frame
    * \param reference_frame The frame in which to track
@@ -224,6 +233,7 @@ public:
     const std::string & reference_point_frame,
     const TimePoint & time, const tf2::Duration & duration) const;
 
+#if !TF2_ROS_FREE_CORE
   /** \brief Lookup the velocity of the moving_frame in the reference_frame
    * \param reference_frame The frame in which to track
    * \param moving_frame The frame to track
@@ -240,6 +250,7 @@ public:
     const std::string & reference_frame, const tf2::Vector3 & reference_point,
     const std::string & reference_point_frame,
     const TimePoint & time, const tf2::Duration & duration) const;
+#endif
 
   /** \brief Test if a transform is possible
    * \param target_frame The frame into which to transform

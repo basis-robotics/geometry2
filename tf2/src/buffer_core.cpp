@@ -48,10 +48,18 @@
 #include "tf2/LinearMath/Transform.h"
 #include "tf2/LinearMath/Vector3.h"
 
-#include "builtin_interfaces/msg/time.hpp"
+#if TF2_ROS_FREE_CORE
+// TODO: TF2 logging helper
+#define RCUTILS_LOG_WARN_THROTTLE(...)
+#define RCUTILS_STEADY_TIME(...)
+#define RCUTILS_LOG_ERROR(...)
+#define RCUTILS_LOG_WARN(...)
+#else
 #include "geometry_msgs/msg/transform.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
-
+#include "rcutils/logging_macros.h"
+#include "builtin_interfaces/msg/time.hpp"
+#endif
 namespace tf2
 {
 
@@ -98,6 +106,7 @@ void fillOrWarnMessageForInvalidFrame(
   }
 }
 
+#if !TF2_ROS_FREE_CORE
 /*
  * remove when geometry_msgs dependency is broken, tf2_geometry_msgs provides a better implementation
  */
@@ -120,6 +129,7 @@ geometry_msgs::msg::TransformStamped toMsg(const tf2::Stamped<tf2::Transform> & 
   msg.header.frame_id = stamped_transform.frame_id_;
   return msg;
 }
+#endif
 
 }  // anonymous namespace
 
@@ -201,6 +211,7 @@ void BufferCore::clear()
   }
 }
 
+#if !TF2_ROS_FREE_CORE
 bool BufferCore::setTransform(
   const geometry_msgs::msg::TransformStamped & transform,
   const std::string & authority, bool is_static)
@@ -222,6 +233,7 @@ bool BufferCore::setTransform(
     tf2_transform, transform.header.frame_id, transform.child_frame_id,
     time_point, authority, is_static);
 }
+#endif
 
 bool BufferCore::setTransformImpl(
   const tf2::Transform & transform_in, const std::string frame_id,
@@ -611,6 +623,7 @@ tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>> BufferCore::lookupVelocityTf
     averaging_interval);
 }
 
+#if !TF2_ROS_FREE_CORE
 geometry_msgs::msg::VelocityStamped BufferCore::lookupVelocity(
   const std::string & tracking_frame, const std::string & observation_frame,
   const TimePoint & time, const tf2::Duration & averaging_interval) const
@@ -622,6 +635,7 @@ geometry_msgs::msg::VelocityStamped BufferCore::lookupVelocity(
       0), tracking_frame, time,
     averaging_interval);
 }
+#endif
 
 tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>> BufferCore::lookupVelocityTf2(
   const std::string & tracking_frame, const std::string & observation_frame,
@@ -715,6 +729,7 @@ tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>> BufferCore::lookupVelocityTf
     reference_frame);
 }
 
+#if !TF2_ROS_FREE_CORE
 geometry_msgs::msg::VelocityStamped BufferCore::lookupVelocity(
   const std::string & tracking_frame, const std::string & observation_frame,
   const std::string & reference_frame, const tf2::Vector3 & reference_point,
@@ -744,6 +759,7 @@ geometry_msgs::msg::VelocityStamped BufferCore::lookupVelocity(
 
   return msg;
 }
+#endif
 
 tf2::Stamped<tf2::Transform>
 BufferCore::lookupTransformTf2(
@@ -758,7 +774,7 @@ BufferCore::lookupTransformTf2(
   return stamped_transform;
 }
 
-
+#if !TF2_ROS_FREE_CORE
 geometry_msgs::msg::TransformStamped
 BufferCore::lookupTransform(
   const std::string & target_frame, const std::string & source_frame,
@@ -773,7 +789,7 @@ BufferCore::lookupTransform(
 
   return msg;
 }
-
+#endif
 
 tf2::Stamped<tf2::Transform>
 BufferCore::lookupTransformTf2(
@@ -790,7 +806,7 @@ BufferCore::lookupTransformTf2(
   return stamped_transform;
 }
 
-
+#if !TF2_ROS_FREE_CORE
 geometry_msgs::msg::TransformStamped
 BufferCore::lookupTransform(
   const std::string & target_frame, const TimePoint & target_time,
@@ -809,6 +825,7 @@ BufferCore::lookupTransform(
 
   return msg;
 }
+#endif
 
 void BufferCore::lookupTransformImpl(
   const std::string & target_frame,
