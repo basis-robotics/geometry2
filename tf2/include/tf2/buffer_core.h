@@ -229,7 +229,7 @@ public:
    * \param moving_frame The frame to track
    * \param time The time at which to get the velocity
    * \param duration The period over which to average
-   * \param velocity The velocity output
+   * \param velocity The velocity output as a ROS type
    *
    * Possible exceptions TransformReference::LookupException, TransformReference::ConnectivityException,
    * TransformReference::MaxDepthException
