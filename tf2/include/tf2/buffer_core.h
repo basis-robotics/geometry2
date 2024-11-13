@@ -135,7 +135,7 @@ public:
    * tf2::ExtrapolationException, tf2::InvalidArgumentException
    */
   TF2_PUBLIC
-  virtual tf2::Stamped<tf2::Transform>
+  tf2::Stamped<tf2::Transform>
   lookupTransformTf2(
     const std::string & target_frame,
     const std::string & source_frame,
@@ -170,7 +170,7 @@ public:
    * tf2::ExtrapolationException, tf2::InvalidArgumentException
    */
   TF2_PUBLIC
-  virtual tf2::Stamped<tf2::Transform>
+  tf2::Stamped<tf2::Transform>
   lookupTransformTf2(
     const std::string & target_frame,
     const tf2::TimePoint & target_time,
