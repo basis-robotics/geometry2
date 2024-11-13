@@ -710,7 +710,9 @@ tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>> BufferCore::lookupVelocityTf
 
   const tf2::TimePoint out_time = tf2::timeFromSec(start_time + averaging_interval_seconds * 0.5);
 
-  return tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>>({out_vel, out_rot}, out_time, reference_frame);
+  return tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>>(
+    {out_vel, out_rot}, out_time,
+    reference_frame);
 }
 
 geometry_msgs::msg::VelocityStamped BufferCore::lookupVelocity(
@@ -719,7 +721,8 @@ geometry_msgs::msg::VelocityStamped BufferCore::lookupVelocity(
   const std::string & reference_point_frame,
   const TimePoint & time, const tf2::Duration & averaging_interval) const
 {
-  const tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>> stamped_velocity = lookupVelocityTf2(tracking_frame, observation_frame, reference_frame,
+  const tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>> stamped_velocity = lookupVelocityTf2(
+    tracking_frame, observation_frame, reference_frame,
     reference_point, reference_point_frame, time, averaging_interval);
 
   geometry_msgs::msg::VelocityStamped msg;
@@ -748,7 +751,9 @@ BufferCore::lookupTransformTf2(
   const TimePoint & time) const
 {
   tf2::Stamped<tf2::Transform> stamped_transform;
-  lookupTransformImpl(target_frame, source_frame, time, stamped_transform, stamped_transform.stamp_);
+  lookupTransformImpl(
+    target_frame, source_frame, time, stamped_transform,
+    stamped_transform.stamp_);
   stamped_transform.frame_id_ = target_frame;
   return stamped_transform;
 }
@@ -759,7 +764,9 @@ BufferCore::lookupTransform(
   const std::string & target_frame, const std::string & source_frame,
   const TimePoint & time) const
 {
-  const tf2::Stamped<tf2::Transform> stamped_transform = lookupTransformTf2(target_frame, source_frame, time);
+  const tf2::Stamped<tf2::Transform> stamped_transform = lookupTransformTf2(
+    target_frame,
+    source_frame, time);
 
   geometry_msgs::msg::TransformStamped msg = toMsg(stamped_transform);
   msg.child_frame_id = source_frame;
@@ -790,7 +797,12 @@ BufferCore::lookupTransform(
   const std::string & source_frame, const TimePoint & source_time,
   const std::string & fixed_frame) const
 {
-  const tf2::Stamped<tf2::Transform> stamped_transform = lookupTransformTf2(target_frame, target_time, source_frame, source_time, fixed_frame);
+  const tf2::Stamped<tf2::Transform> stamped_transform = lookupTransformTf2(
+    target_frame,
+    target_time,
+    source_frame,
+    source_time,
+    fixed_frame);
 
   geometry_msgs::msg::TransformStamped msg = toMsg(stamped_transform);
   msg.child_frame_id = source_frame;
