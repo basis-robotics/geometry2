@@ -57,16 +57,92 @@
 namespace tf2_ros
 {
 
+// Needed for BufferServer - unfortunately introduces virtual inheritance
+class BufferCoreROSConversionsInterface : virtual public tf2::BufferCoreInterface {
+public:
+/**
+   * \brief Get the transform between two frames by frame ID.
+   * \param target_frame The frame to which data should be transformed.
+   * \param source_frame The frame where the data originated.
+   * \param time The time at which the value of the transform is desired (0 will get the latest).
+   * \return The transform between the frames as a ROS type.
+   */
+  TF2_PUBLIC
+  virtual geometry_msgs::msg::TransformStamped
+  lookupTransform(
+    const std::string & target_frame,
+    const std::string & source_frame,
+    const tf2::TimePoint & time) const = 0;
+
+  /**
+   * \brief Get the transform between two frames by frame ID assuming fixed frame.
+   * \param target_frame The frame to which data should be transformed.
+   * \param target_time The time to which the data should be transformed (0 will get the latest).
+   * \param source_frame The frame where the data originated.
+   * \param source_time The time at which the source_frame should be evaluated
+   *   (0 will get the latest).
+   * \param fixed_frame The frame in which to assume the transform is constant in time.
+   * \return The transform between the frames as a ROS type.
+   */
+  TF2_PUBLIC
+  virtual geometry_msgs::msg::TransformStamped
+  lookupTransform(
+    const std::string & target_frame,
+    const tf2::TimePoint & target_time,
+    const std::string & source_frame,
+    const tf2::TimePoint & source_time,
+    const std::string & fixed_frame) const = 0;
+};
+
+class BufferCoreROSConversions : public tf2::BufferCore, public BufferCoreROSConversionsInterface {
+public:
+  // How does one use a using declaration on a constructor 
+  using BufferCore = tf2::BufferCore;
+  using BufferCore::BufferCore;
+/**
+   * \brief Get the transform between two frames by frame ID.
+   * \param target_frame The frame to which data should be transformed.
+   * \param source_frame The frame where the data originated.
+   * \param time The time at which the value of the transform is desired (0 will get the latest).
+   * \return The transform between the frames as a ROS type.
+   */
+  TF2_PUBLIC
+  virtual geometry_msgs::msg::TransformStamped
+  lookupTransform(
+    const std::string & target_frame,
+    const std::string & source_frame,
+    const tf2::TimePoint & time) const override;
+
+  /**
+   * \brief Get the transform between two frames by frame ID assuming fixed frame.
+   * \param target_frame The frame to which data should be transformed.
+   * \param target_time The time to which the data should be transformed (0 will get the latest).
+   * \param source_frame The frame where the data originated.
+   * \param source_time The time at which the source_frame should be evaluated
+   *   (0 will get the latest).
+   * \param fixed_frame The frame in which to assume the transform is constant in time.
+   * \return The transform between the frames as a ROS type.
+   */
+  TF2_PUBLIC
+  virtual geometry_msgs::msg::TransformStamped
+  lookupTransform(
+    const std::string & target_frame,
+    const tf2::TimePoint & target_time,
+    const std::string & source_frame,
+    const tf2::TimePoint & source_time,
+    const std::string & fixed_frame) const override;
+};
+
 /** \brief Standard implementation of the tf2_ros::BufferInterface abstract data type.
  *
  * Inherits tf2_ros::BufferInterface and tf2::BufferCore.
  * Stores known frames and offers a ROS service, "tf_frames", which responds to client requests
  * with a response containing a tf2_msgs::FrameGraph representing the relationship of known frames.
  */
-class Buffer : public BufferInterface, public AsyncBufferInterface, public tf2::BufferCore
+class Buffer : public BufferCoreROSConversions, public BufferInterface, public AsyncBufferInterface
 {
 public:
-  using tf2::BufferCore::lookupTransform;
+  using BufferCoreROSConversions::lookupTransform;
   using tf2::BufferCore::canTransform;
   using SharedPtr = std::shared_ptr<tf2_ros::Buffer>;
 
@@ -82,7 +158,7 @@ public:
     tf2::Duration cache_time = tf2::Duration(tf2::BUFFER_CORE_DEFAULT_CACHE_TIME),
     NodeT && node = NodeT(),
     const rclcpp::QoS & qos = rclcpp::ServicesQoS())
-  : BufferCore(cache_time), clock_(clock), timer_interface_(nullptr)
+  : BufferCoreROSConversions(cache_time), clock_(clock), timer_interface_(nullptr)
   {
     if (nullptr == clock_) {
       throw std::invalid_argument("clock must be a valid instance");

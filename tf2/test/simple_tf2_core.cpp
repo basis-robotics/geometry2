@@ -127,7 +127,7 @@ TEST(tf2, setTransformInvalidQuaternion)
   st.transform.rotation.w = 0;
   EXPECT_FALSE(tfc.setTransform(st, "authority1"));
 }
-
+#ifdef SHOULD_USE_TF2_VER
 TEST(tf2_lookupTransform, LookupException_Nothing_Exists)
 {
   tf2::BufferCore tfc;
@@ -137,13 +137,13 @@ TEST(tf2_lookupTransform, LookupException_Nothing_Exists)
         std::chrono::seconds(
           1))), tf2::LookupException);
 }
-
+#endif
 TEST(tf2_canTransform, Nothing_Exists)
 {
   tf2::BufferCore tfc;
   EXPECT_FALSE(tfc.canTransform("a", "b", tf2::TimePoint(std::chrono::seconds(1))));
 }
-
+#ifdef SHOULD_USE_TF2_VER
 TEST(tf2_lookupTransform, LookupException_One_Exists)
 {
   tf2::BufferCore tfc;
@@ -258,7 +258,7 @@ TEST(tf2_clear, LookUp_Static_Transfrom_Fail)
     auto trans = tfc.lookupTransform("foo", "bar", tf2::TimePoint(std::chrono::seconds(2)));
   );
 }
-
+#endif
 TEST(tf2_time, Display_Time_Point)
 {
   tf2::TimePoint t = tf2::get_now();

@@ -41,7 +41,7 @@ find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
 
 ament_python_install_package(${PROJECT_NAME})
 

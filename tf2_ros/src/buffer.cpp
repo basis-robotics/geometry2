@@ -57,6 +57,36 @@ to_rclcpp(const tf2::Duration & duration)
 }
 
 geometry_msgs::msg::TransformStamped
+BufferCoreROSConversions::lookupTransform(
+  const std::string & target_frame, const std::string & source_frame,
+  const tf2::TimePoint & time) const
+{
+  const tf2::Stamped<tf2::Transform> stamped_transform = lookupTransformTf2(
+    target_frame,
+    source_frame, time);
+
+  geometry_msgs::msg::TransformStamped msg = tf2::toMsg<tf2::Stamped<tf2::Transform>, geometry_msgs::msg::TransformStamped>(stamped_transform);
+  msg.child_frame_id = source_frame;
+
+  return msg;
+}
+
+geometry_msgs::msg::TransformStamped
+BufferCoreROSConversions::lookupTransform(
+  const std::string & target_frame, const tf2::TimePoint & target_time,
+  const std::string & source_frame, const tf2::TimePoint & source_time,
+  const std::string & fixed_frame) const
+{
+  return lookupTransform(
+    target_frame,
+    target_time,
+    source_frame,
+    source_time,
+    fixed_frame);
+}
+
+
+geometry_msgs::msg::TransformStamped
 Buffer::lookupTransform(
   const std::string & target_frame, const std::string & source_frame,
   const tf2::TimePoint & lookup_time, const tf2::Duration timeout) const
@@ -64,6 +94,7 @@ Buffer::lookupTransform(
   // Pass error string to suppress console spam
   std::string error;
   canTransform(target_frame, source_frame, lookup_time, timeout, &error);
+  
   return lookupTransform(target_frame, source_frame, lookup_time);
 }
 
@@ -89,6 +120,7 @@ Buffer::lookupTransform(
   // Pass error string to suppress console spam
   std::string error;
   canTransform(target_frame, target_time, source_frame, source_time, fixed_frame, timeout, &error);
+  
   return lookupTransform(target_frame, target_time, source_frame, source_time, fixed_frame);
 }
 
@@ -206,7 +238,7 @@ Buffer::waitForTransform(
 
       if (result == tf2::TransformAvailable) {
         geometry_msgs::msg::TransformStamped msg_stamped = this->lookupTransform(
-          target_frame, source_frame, time);
+          target_frame, source_frame, time, tf2::Duration(0));
         promise->set_value(msg_stamped);
       } else {
         promise->set_exception(
@@ -222,7 +254,7 @@ Buffer::waitForTransform(
   if (0 == handle) {
     // Immediately transformable
     geometry_msgs::msg::TransformStamped msg_stamped = lookupTransform(
-      target_frame, source_frame, time);
+      target_frame, source_frame, time, tf2::Duration(0));
     promise->set_value(msg_stamped);
     callback(future);
   } else if (0xffffffffffffffffULL == handle) {

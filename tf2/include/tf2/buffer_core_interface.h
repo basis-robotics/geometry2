@@ -76,22 +76,6 @@ public:
     const std::string & source_frame,
     const tf2::TimePoint & time) const = 0;
 
-#if !TF2_ROS_FREE_CORE
-  /**
-   * \brief Get the transform between two frames by frame ID.
-   * \param target_frame The frame to which data should be transformed.
-   * \param source_frame The frame where the data originated.
-   * \param time The time at which the value of the transform is desired (0 will get the latest).
-   * \return The transform between the frames as a ROS type.
-   */
-  TF2_PUBLIC
-  virtual geometry_msgs::msg::TransformStamped
-  lookupTransform(
-    const std::string & target_frame,
-    const std::string & source_frame,
-    const tf2::TimePoint & time) const = 0;
-#endif
-
   /**
    * \brief Get the transform between two frames by frame ID assuming fixed frame.
    * \param target_frame The frame to which data should be transformed.
@@ -110,27 +94,6 @@ public:
     const std::string & source_frame,
     const tf2::TimePoint & source_time,
     const std::string & fixed_frame) const = 0;
-
-#if !TF2_ROS_FREE_CORE
-  /**
-   * \brief Get the transform between two frames by frame ID assuming fixed frame.
-   * \param target_frame The frame to which data should be transformed.
-   * \param target_time The time to which the data should be transformed (0 will get the latest).
-   * \param source_frame The frame where the data originated.
-   * \param source_time The time at which the source_frame should be evaluated
-   *   (0 will get the latest).
-   * \param fixed_frame The frame in which to assume the transform is constant in time.
-   * \return The transform between the frames as a ROS type.
-   */
-  TF2_PUBLIC
-  virtual geometry_msgs::msg::TransformStamped
-  lookupTransform(
-    const std::string & target_frame,
-    const tf2::TimePoint & target_time,
-    const std::string & source_frame,
-    const tf2::TimePoint & source_time,
-    const std::string & fixed_frame) const = 0;
-#endif
 
   /**
    * \brief Test if a transform is possible.

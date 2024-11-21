@@ -106,31 +106,6 @@ void fillOrWarnMessageForInvalidFrame(
   }
 }
 
-#if !TF2_ROS_FREE_CORE
-/*
- * remove when geometry_msgs dependency is broken, tf2_geometry_msgs provides a better implementation
- */
-geometry_msgs::msg::TransformStamped toMsg(const tf2::Stamped<tf2::Transform> & stamped_transform)
-{
-  geometry_msgs::msg::TransformStamped msg;
-  msg.transform.translation.x = stamped_transform.getOrigin().x();
-  msg.transform.translation.y = stamped_transform.getOrigin().y();
-  msg.transform.translation.z = stamped_transform.getOrigin().z();
-  msg.transform.rotation.x = stamped_transform.getRotation().x();
-  msg.transform.rotation.y = stamped_transform.getRotation().y();
-  msg.transform.rotation.z = stamped_transform.getRotation().z();
-  msg.transform.rotation.w = stamped_transform.getRotation().w();
-  std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
-    stamped_transform.stamp_.time_since_epoch());
-  std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(
-    stamped_transform.stamp_.time_since_epoch());
-  msg.header.stamp.sec = static_cast<int32_t>(s.count());
-  msg.header.stamp.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
-  msg.header.frame_id = stamped_transform.frame_id_;
-  return msg;
-}
-#endif
-
 }  // anonymous namespace
 
 CompactFrameID BufferCore::validateFrameId(
@@ -774,23 +749,6 @@ BufferCore::lookupTransformTf2(
   return stamped_transform;
 }
 
-#if !TF2_ROS_FREE_CORE
-geometry_msgs::msg::TransformStamped
-BufferCore::lookupTransform(
-  const std::string & target_frame, const std::string & source_frame,
-  const TimePoint & time) const
-{
-  const tf2::Stamped<tf2::Transform> stamped_transform = lookupTransformTf2(
-    target_frame,
-    source_frame, time);
-
-  geometry_msgs::msg::TransformStamped msg = toMsg(stamped_transform);
-  msg.child_frame_id = source_frame;
-
-  return msg;
-}
-#endif
-
 tf2::Stamped<tf2::Transform>
 BufferCore::lookupTransformTf2(
   const std::string & target_frame, const TimePoint & target_time,
@@ -805,27 +763,6 @@ BufferCore::lookupTransformTf2(
 
   return stamped_transform;
 }
-
-#if !TF2_ROS_FREE_CORE
-geometry_msgs::msg::TransformStamped
-BufferCore::lookupTransform(
-  const std::string & target_frame, const TimePoint & target_time,
-  const std::string & source_frame, const TimePoint & source_time,
-  const std::string & fixed_frame) const
-{
-  const tf2::Stamped<tf2::Transform> stamped_transform = lookupTransformTf2(
-    target_frame,
-    target_time,
-    source_frame,
-    source_time,
-    fixed_frame);
-
-  geometry_msgs::msg::TransformStamped msg = toMsg(stamped_transform);
-  msg.child_frame_id = source_frame;
-
-  return msg;
-}
-#endif
 
 void BufferCore::lookupTransformImpl(
   const std::string & target_frame,
