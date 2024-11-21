@@ -45,10 +45,6 @@
 #include <vector>
 
 #include "LinearMath/Transform.h"
-#if !TF2_ROS_FREE_CORE
-#include "geometry_msgs/msg/transform_stamped.hpp"
-#include "geometry_msgs/msg/velocity_stamped.hpp"
-#endif
 
 #include "tf2/buffer_core_interface.h"
 #include "tf2/exceptions.h"
@@ -113,19 +109,6 @@ public:
   TF2_PUBLIC
   void clear() override;
 
-#if !TF2_ROS_FREE_CORE
-  /** \brief Add transform information to the tf data structure
-   * \param transform The transform to store
-   * \param authority The source of the information for this transform
-   * \param is_static Record this transform as a static transform.  It will be good across all time.  (This cannot be changed after the first call.)
-   * \return True unless an error occured
-   */
-  TF2_PUBLIC
-  bool setTransform(
-    const geometry_msgs::msg::TransformStamped & transform,
-    const std::string & authority, bool is_static = false);
-#endif
-
   /*********** Accessors *************/
   /**
    * \brief Get the transform between two frames by frame ID.
@@ -172,13 +155,6 @@ public:
     const std::string & tracking_frame, const std::string & observation_frame,
     const TimePoint & time, const tf2::Duration & averaging_interval) const;
 
-#if !TF2_ROS_FREE_CORE
-  TF2_PUBLIC
-  geometry_msgs::msg::VelocityStamped lookupVelocity(
-    const std::string & tracking_frame, const std::string & observation_frame,
-    const TimePoint & time, const tf2::Duration & averaging_interval) const;
-#endif
-
   /** \brief Lookup the velocity of the moving_frame in the reference_frame
    * \param reference_frame The frame in which to track
    * \param moving_frame The frame to track
@@ -196,24 +172,12 @@ public:
     const std::string & reference_point_frame,
     const TimePoint & time, const tf2::Duration & duration) const;
 
-#if !TF2_ROS_FREE_CORE
-  /** \brief Lookup the velocity of the moving_frame in the reference_frame
-   * \param reference_frame The frame in which to track
-   * \param moving_frame The frame to track
-   * \param time The time at which to get the velocity
-   * \param duration The period over which to average
-   * \param velocity The velocity output as a ROS type
-   *
-   * Possible exceptions TransformReference::LookupException, TransformReference::ConnectivityException,
-   * TransformReference::MaxDepthException
-   */
-  TF2_PUBLIC
-  geometry_msgs::msg::VelocityStamped lookupVelocity(
-    const std::string & tracking_frame, const std::string & observation_frame,
-    const std::string & reference_frame, const tf2::Vector3 & reference_point,
-    const std::string & reference_point_frame,
-    const TimePoint & time, const tf2::Duration & duration) const;
-#endif
+  bool setTransformTf2(
+    const tf2::Transform & transform_in, const std::string frame_id,
+    const std::string child_frame_id, const TimePoint stamp,
+    const std::string & authority, bool is_static) {
+      return setTransformImpl(transform_in, frame_id, child_frame_id, stamp, authority, is_static);
+    }
 
   /** \brief Test if a transform is possible
    * \param target_frame The frame into which to transform

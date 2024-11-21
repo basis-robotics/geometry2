@@ -55,10 +55,7 @@
 #define RCUTILS_LOG_ERROR(...)
 #define RCUTILS_LOG_WARN(...)
 #else
-#include "geometry_msgs/msg/transform.hpp"
-#include "geometry_msgs/msg/transform_stamped.hpp"
 #include "rcutils/logging_macros.h"
-#include "builtin_interfaces/msg/time.hpp"
 #endif
 namespace tf2
 {
@@ -185,30 +182,6 @@ void BufferCore::clear()
     }
   }
 }
-
-#if !TF2_ROS_FREE_CORE
-bool BufferCore::setTransform(
-  const geometry_msgs::msg::TransformStamped & transform,
-  const std::string & authority, bool is_static)
-{
-  tf2::Transform tf2_transform(tf2::Quaternion(
-      transform.transform.rotation.x,
-      transform.transform.rotation.y,
-      transform.transform.rotation.z,
-      transform.transform.rotation.w),
-    tf2::Vector3(
-      transform.transform.translation.x,
-      transform.transform.translation.y,
-      transform.transform.translation.z));
-  TimePoint time_point(std::chrono::nanoseconds(transform.header.stamp.nanosec) +
-    std::chrono::duration_cast<std::chrono::nanoseconds>(
-      std::chrono::seconds(
-        transform.header.stamp.sec)));
-  return setTransformImpl(
-    tf2_transform, transform.header.frame_id, transform.child_frame_id,
-    time_point, authority, is_static);
-}
-#endif
 
 bool BufferCore::setTransformImpl(
   const tf2::Transform & transform_in, const std::string frame_id,
@@ -598,19 +571,7 @@ tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>> BufferCore::lookupVelocityTf
     averaging_interval);
 }
 
-#if !TF2_ROS_FREE_CORE
-geometry_msgs::msg::VelocityStamped BufferCore::lookupVelocity(
-  const std::string & tracking_frame, const std::string & observation_frame,
-  const TimePoint & time, const tf2::Duration & averaging_interval) const
-{
-  // ref point is origin of tracking_frame, ref_frame = obs_frame
-  return lookupVelocity(
-    tracking_frame, observation_frame, observation_frame, tf2::Vector3(
-      0, 0,
-      0), tracking_frame, time,
-    averaging_interval);
-}
-#endif
+
 
 tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>> BufferCore::lookupVelocityTf2(
   const std::string & tracking_frame, const std::string & observation_frame,
@@ -703,38 +664,6 @@ tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>> BufferCore::lookupVelocityTf
     {out_vel, out_rot}, out_time,
     reference_frame);
 }
-
-#if !TF2_ROS_FREE_CORE
-geometry_msgs::msg::VelocityStamped BufferCore::lookupVelocity(
-  const std::string & tracking_frame, const std::string & observation_frame,
-  const std::string & reference_frame, const tf2::Vector3 & reference_point,
-  const std::string & reference_point_frame,
-  const TimePoint & time, const tf2::Duration & averaging_interval) const
-{
-  const tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>> stamped_velocity = lookupVelocityTf2(
-    tracking_frame, observation_frame, reference_frame,
-    reference_point, reference_point_frame, time, averaging_interval);
-
-  geometry_msgs::msg::VelocityStamped msg;
-  const std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
-    stamped_velocity.stamp_.time_since_epoch());
-  const std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(
-    stamped_velocity.stamp_.time_since_epoch());
-  msg.header.stamp.sec = static_cast<int32_t>(s.count());
-  msg.header.stamp.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
-  msg.header.frame_id = reference_frame;
-  msg.body_frame_id = tracking_frame;
-
-  msg.velocity.linear.x = stamped_velocity.first.x();
-  msg.velocity.linear.y = stamped_velocity.first.y();
-  msg.velocity.linear.z = stamped_velocity.first.z();
-  msg.velocity.angular.x = stamped_velocity.second.x();
-  msg.velocity.angular.y = stamped_velocity.second.y();
-  msg.velocity.angular.z = stamped_velocity.second.z();
-
-  return msg;
-}
-#endif
 
 tf2::Stamped<tf2::Transform>
 BufferCore::lookupTransformTf2(

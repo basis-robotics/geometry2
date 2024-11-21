@@ -47,46 +47,10 @@
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "rclcpp/rclcpp.hpp"
 
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+
 namespace tf2_ros
 {
-
-inline builtin_interfaces::msg::Time toMsg(const tf2::TimePoint & t)
-{
-  std::chrono::nanoseconds ns =
-    std::chrono::duration_cast<std::chrono::nanoseconds>(t.time_since_epoch());
-  std::chrono::seconds s =
-    std::chrono::duration_cast<std::chrono::seconds>(t.time_since_epoch());
-  builtin_interfaces::msg::Time time_msg;
-  time_msg.sec = static_cast<int32_t>(s.count());
-  time_msg.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
-  return time_msg;
-}
-
-inline tf2::TimePoint fromMsg(const builtin_interfaces::msg::Time & time_msg)
-{
-  int64_t d = time_msg.sec * 1000000000ull + time_msg.nanosec;
-  std::chrono::nanoseconds ns(d);
-  return tf2::TimePoint(std::chrono::duration_cast<tf2::Duration>(ns));
-}
-
-inline builtin_interfaces::msg::Duration toMsg(const tf2::Duration & t)
-{
-  std::chrono::nanoseconds ns =
-    std::chrono::duration_cast<std::chrono::nanoseconds>(t);
-  std::chrono::seconds s =
-    std::chrono::duration_cast<std::chrono::seconds>(t);
-  builtin_interfaces::msg::Duration duration_msg;
-  duration_msg.sec = static_cast<int32_t>(s.count());
-  duration_msg.nanosec = static_cast<uint32_t>(ns.count() % 1000000000ull);
-  return duration_msg;
-}
-
-inline tf2::Duration fromMsg(const builtin_interfaces::msg::Duration & duration_msg)
-{
-  int64_t d = duration_msg.sec * 1000000000ull + duration_msg.nanosec;
-  std::chrono::nanoseconds ns(d);
-  return tf2::Duration(std::chrono::duration_cast<tf2::Duration>(ns));
-}
 
 inline double timeToSec(const builtin_interfaces::msg::Time & time_msg)
 {
@@ -118,76 +82,6 @@ inline rclcpp::Duration toRclcpp(const tf2::Duration & duration)
 {
   return rclcpp::Duration(std::chrono::duration_cast<std::chrono::nanoseconds>(duration));
 }
-
-#if 0
-  /**
-   * \brief Get the transform between two frames by frame ID.
-   * \param target_frame The frame to which data should be transformed.
-   * \param source_frame The frame where the data originated.
-   * \param time The time at which the value of the transform is desired (0 will get the latest).
-   * \return The transform between the frames as a ROS type.
-   */
-  TF2_PUBLIC
-  virtual geometry_msgs::msg::TransformStamped
-  lookupTransform(
-    const std::string & target_frame,
-    const std::string & source_frame,
-    const tf2::TimePoint & time) const = 0;
-
-  /**
-   * \brief Get the transform between two frames by frame ID assuming fixed frame.
-   * \param target_frame The frame to which data should be transformed.
-   * \param target_time The time to which the data should be transformed (0 will get the latest).
-   * \param source_frame The frame where the data originated.
-   * \param source_time The time at which the source_frame should be evaluated
-   *   (0 will get the latest).
-   * \param fixed_frame The frame in which to assume the transform is constant in time.
-   * \return The transform between the frames as a ROS type.
-   */
-  TF2_PUBLIC
-  virtual geometry_msgs::msg::TransformStamped
-  lookupTransform(
-    const std::string & target_frame,
-    const tf2::TimePoint & target_time,
-    const std::string & source_frame,
-    const tf2::TimePoint & source_time,
-    const std::string & fixed_frame) const = 0;
-
-geometry_msgs::msg::TransformStamped
-BufferCore::lookupTransform(
-  const std::string & target_frame, const std::string & source_frame,
-  const TimePoint & time) const
-{
-  const tf2::Stamped<tf2::Transform> stamped_transform = lookupTransformTf2(
-    target_frame,
-    source_frame, time);
-
-  geometry_msgs::msg::TransformStamped msg = toMsg(stamped_transform);
-  msg.child_frame_id = source_frame;
-
-  return msg;
-}
-
-geometry_msgs::msg::TransformStamped
-BufferCore::lookupTransform(
-  const std::string & target_frame, const TimePoint & target_time,
-  const std::string & source_frame, const TimePoint & source_time,
-  const std::string & fixed_frame) const
-{
-  const tf2::Stamped<tf2::Transform> stamped_transform = lookupTransformTf2(
-    target_frame,
-    target_time,
-    source_frame,
-    source_time,
-    fixed_frame);
-
-  geometry_msgs::msg::TransformStamped msg = toMsg(stamped_transform);
-  msg.child_frame_id = source_frame;
-
-  return msg;
-}
-
-#endif
 
 /** \brief Abstract interface for wrapping tf2::BufferCoreInterface in a ROS-based API.
  * Implementations include tf2_ros::Buffer and tf2_ros::BufferClient.

@@ -47,6 +47,7 @@
 #include "tf2/time.h"
 
 #include "geometry_msgs/msg/transform_stamped.hpp"
+#include "geometry_msgs/msg/velocity_stamped.hpp"
 #include "tf2_msgs/srv/frame_graph.hpp"
 #include "rclcpp/node_interfaces/get_node_base_interface.hpp"
 #include "rclcpp/node_interfaces/get_node_services_interface.hpp"
@@ -92,6 +93,39 @@ public:
     const std::string & source_frame,
     const tf2::TimePoint & source_time,
     const std::string & fixed_frame) const = 0;
+
+  /** \brief Add transform information to the tf data structure
+   * \param transform The transform to store
+   * \param authority The source of the information for this transform
+   * \param is_static Record this transform as a static transform.  It will be good across all time.  (This cannot be changed after the first call.)
+   * \return True unless an error occured
+   */
+  TF2_PUBLIC
+  virtual bool setTransform(
+    const geometry_msgs::msg::TransformStamped & transform,
+    const std::string & authority, bool is_static = false) = 0;
+
+  TF2_PUBLIC
+  virtual geometry_msgs::msg::VelocityStamped lookupVelocity(
+    const std::string & tracking_frame, const std::string & observation_frame,
+    const tf2::TimePoint & time, const tf2::Duration & averaging_interval) const = 0;
+
+  /** \brief Lookup the velocity of the moving_frame in the reference_frame
+   * \param reference_frame The frame in which to track
+   * \param moving_frame The frame to track
+   * \param time The time at which to get the velocity
+   * \param duration The period over which to average
+   * \param velocity The velocity output as a ROS type
+   *
+   * Possible exceptions TransformReference::LookupException, TransformReference::ConnectivityException,
+   * TransformReference::MaxDepthException
+   */
+  TF2_PUBLIC
+  virtual geometry_msgs::msg::VelocityStamped lookupVelocity(
+    const std::string & tracking_frame, const std::string & observation_frame,
+    const std::string & reference_frame, const tf2::Vector3 & reference_point,
+    const std::string & reference_point_frame,
+    const tf2::TimePoint & time, const tf2::Duration & duration) const = 0;
 };
 
 class BufferCoreROSConversions : public tf2::BufferCore, public BufferCoreROSConversionsInterface {
@@ -131,6 +165,40 @@ public:
     const std::string & source_frame,
     const tf2::TimePoint & source_time,
     const std::string & fixed_frame) const override;
+
+    
+  /** \brief Add transform information to the tf data structure
+   * \param transform The transform to store
+   * \param authority The source of the information for this transform
+   * \param is_static Record this transform as a static transform.  It will be good across all time.  (This cannot be changed after the first call.)
+   * \return True unless an error occured
+   */
+  TF2_PUBLIC
+  virtual bool setTransform(
+    const geometry_msgs::msg::TransformStamped & transform,
+    const std::string & authority, bool is_static = false) override;
+
+  TF2_PUBLIC
+  virtual geometry_msgs::msg::VelocityStamped lookupVelocity(
+    const std::string & tracking_frame, const std::string & observation_frame,
+    const tf2::TimePoint & time, const tf2::Duration & averaging_interval) const override;
+
+  /** \brief Lookup the velocity of the moving_frame in the reference_frame
+   * \param reference_frame The frame in which to track
+   * \param moving_frame The frame to track
+   * \param time The time at which to get the velocity
+   * \param duration The period over which to average
+   * \param velocity The velocity output as a ROS type
+   *
+   * Possible exceptions TransformReference::LookupException, TransformReference::ConnectivityException,
+   * TransformReference::MaxDepthException
+   */
+  TF2_PUBLIC
+  virtual geometry_msgs::msg::VelocityStamped lookupVelocity(
+    const std::string & tracking_frame, const std::string & observation_frame,
+    const std::string & reference_frame, const tf2::Vector3 & reference_point,
+    const std::string & reference_point_frame,
+    const tf2::TimePoint & time, const tf2::Duration & duration) const override;
 };
 
 /** \brief Standard implementation of the tf2_ros::BufferInterface abstract data type.

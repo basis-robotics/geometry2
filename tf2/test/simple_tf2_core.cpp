@@ -36,7 +36,9 @@
 #include <vector>
 
 #include "builtin_interfaces/msg/time.hpp"
+#ifdef SHOULD_USE_TF2_VER
 #include "geometry_msgs/msg/transform_stamped.hpp"
+#endif
 
 #include "tf2/buffer_core.h"
 #include "tf2/convert.h"
@@ -44,6 +46,7 @@
 #include "tf2/exceptions.h"
 #include "tf2/time.h"
 
+#ifdef SHOULD_USE_TF2_VER
 TEST(tf2, setTransformFail)
 {
   tf2::BufferCore tfc;
@@ -127,7 +130,7 @@ TEST(tf2, setTransformInvalidQuaternion)
   st.transform.rotation.w = 0;
   EXPECT_FALSE(tfc.setTransform(st, "authority1"));
 }
-#ifdef SHOULD_USE_TF2_VER
+
 TEST(tf2_lookupTransform, LookupException_Nothing_Exists)
 {
   tf2::BufferCore tfc;

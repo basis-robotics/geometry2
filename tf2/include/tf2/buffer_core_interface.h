@@ -31,10 +31,6 @@
 #include <string>
 #include <vector>
 
-#if !TF2_ROS_FREE_CORE
-#include "geometry_msgs/msg/transform_stamped.hpp"
-#endif
-
 #include "tf2/time.h"
 #include "tf2/transform_datatypes.h"
 #include "tf2/visibility_control.h"
