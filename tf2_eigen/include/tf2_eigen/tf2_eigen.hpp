@@ -259,7 +259,7 @@ inline
 geometry_msgs::msg::PointStamped toMsg(const tf2::Stamped<Eigen::Vector3d> & in)
 {
   geometry_msgs::msg::PointStamped msg;
-  msg.header.stamp = tf2_ros::toMsg(in.stamp_);
+  msg.header.stamp = tf2::toMsg(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.point = toMsg(static_cast<const Eigen::Vector3d &>(in));
   return msg;
@@ -365,7 +365,7 @@ inline
 geometry_msgs::msg::QuaternionStamped toMsg(const Stamped<Eigen::Quaterniond> & in)
 {
   geometry_msgs::msg::QuaternionStamped msg;
-  msg.header.stamp = tf2_ros::toMsg(in.stamp_);
+  msg.header.stamp = tf2::toMsg(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.quaternion = toMsg(static_cast<const Eigen::Quaterniond &>(in));
   return msg;
@@ -584,7 +584,7 @@ inline
 geometry_msgs::msg::PoseStamped toMsg(const tf2::Stamped<Eigen::Affine3d> & in)
 {
   geometry_msgs::msg::PoseStamped msg;
-  msg.header.stamp = tf2_ros::toMsg(in.stamp_);
+  msg.header.stamp = tf2::toMsg(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.pose = toMsg(static_cast<const Eigen::Affine3d &>(in));
   return msg;
@@ -594,7 +594,7 @@ inline
 geometry_msgs::msg::PoseStamped toMsg(const tf2::Stamped<Eigen::Isometry3d> & in)
 {
   geometry_msgs::msg::PoseStamped msg;
-  msg.header.stamp = tf2_ros::toMsg(in.stamp_);
+  msg.header.stamp = tf2::toMsg(in.stamp_);
   msg.header.frame_id = in.frame_id_;
   msg.pose = toMsg(static_cast<const Eigen::Isometry3d &>(in));
   return msg;

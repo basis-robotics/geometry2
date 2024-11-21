@@ -63,6 +63,7 @@ set_target_properties(_tf2_py PROPERTIES
 target_link_libraries(_tf2_py PRIVATE
   ${geometry_msgs_TARGETS}
   tf2::tf2
+  tf2_ros::tf2_ros
 )
 
 install(TARGETS
