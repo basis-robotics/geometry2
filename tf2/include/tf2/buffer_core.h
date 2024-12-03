@@ -381,11 +381,11 @@ private:
    */
   std::string allFramesAsStringNoLock() const;
 
-  [[deprecated("Pass origin and rotation separately")]]
-  bool setTransformImpl(
-    const tf2::Transform & transform_in, const std::string frame_id,
-    const std::string child_frame_id, const TimePoint stamp,
-    const std::string & authority, bool is_static);
+  // [[deprecated("Pass origin and rotation separately")]]
+  // bool setTransformImpl(
+  //   const tf2::Transform & transform_in, const std::string frame_id,
+  //   const std::string child_frame_id, const TimePoint stamp,
+  //   const std::string & authority, bool is_static);
   bool setTransformImpl(
     const tf2::Vector3 & origin_in, const tf2::Quaternion & rotation_in, const std::string & frame_id,
     const std::string child_frame_id, const TimePoint stamp,

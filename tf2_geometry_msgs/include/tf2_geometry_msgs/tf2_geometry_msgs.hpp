@@ -853,7 +853,7 @@ geometry_msgs::msg::PoseWithCovarianceStamped toMsg(
   out.header.stamp = tf2_ros::toMsg(in.stamp_);
   out.header.frame_id = in.frame_id_;
   out.pose.covariance = covarianceNestedToRowMajor(in.cov_mat_);
-  tf2::Quaternion rotation - in.getRotation();
+  tf2::Quaternion rotation = in.getRotation();
   out.pose.pose.orientation.x = rotation.getX();
   out.pose.pose.orientation.y = rotation.getY();
   out.pose.pose.orientation.z = rotation.getZ();

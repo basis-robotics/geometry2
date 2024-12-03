@@ -186,7 +186,7 @@ bool BufferCore::setTransform(
       transform.transform.rotation.x,
       transform.transform.rotation.y,
       transform.transform.rotation.z,
-      transform.transform.rotation.w),
+      transform.transform.rotation.w);
   tf2::Vector3 origin(
       transform.transform.translation.x,
       transform.transform.translation.y,
@@ -196,17 +196,17 @@ bool BufferCore::setTransform(
       std::chrono::seconds(
         transform.header.stamp.sec)));
   return setTransformImpl(
-    rotation, origin, transform.header.frame_id, transform.child_frame_id,
+    origin, rotation, transform.header.frame_id, transform.child_frame_id,
     time_point, authority, is_static);
 }
 
-bool BufferCore::setTransformImpl(
-  const tf2::Transform & transform_in, const std::string frame_id,
-  const std::string child_frame_id, const TimePoint stamp,
-  const std::string & authority, bool is_static)
-{
-  return setTransformImpl(transform_in.getOrigin(), transform_in.getRotation(), frame_id, child_frame_id, stamp, authority, is_static);
-}
+// bool BufferCore::setTransformImpl(
+//   const tf2::Transform & transform_in, const std::string frame_id,
+//   const std::string child_frame_id, const TimePoint stamp,
+//   const std::string & authority, bool is_static)
+// {
+//   return setTransformImpl(transform_in.getOrigin(), transform_in.getRotation(), frame_id, child_frame_id, stamp, authority, is_static);
+// }
 
 bool BufferCore::setTransformImpl(
   const tf2::Vector3 & origin_in, const tf2::Quaternion & rotation_in, const std::string & frame_id,
@@ -239,10 +239,8 @@ bool BufferCore::setTransformImpl(
     error_exists = true;
   }
 
-  const tf2::Quaternion rotation_in = transform_in.getRotation();
-
-  if (std::isnan(transform_in.getOrigin().x()) || std::isnan(transform_in.getOrigin().y()) ||
-    std::isnan(transform_in.getOrigin().z()) ||
+  if (std::isnan(origin_in.x()) || std::isnan(origin_in.y()) ||
+    std::isnan(origin_in.z()) ||
     std::isnan(rotation_in.x()) || std::isnan(rotation_in.y()) ||
     std::isnan(rotation_in.z()) || std::isnan(rotation_in.w()))
   {
@@ -250,7 +248,7 @@ bool BufferCore::setTransformImpl(
       "TF_NAN_INPUT: Ignoring transform for child_frame_id \"%s\" from authority \"%s\" because"
       " of a nan value in the transform (%f %f %f) (%f %f %f %f)",
       stripped_child_frame_id.c_str(), authority.c_str(),
-      transform_in.getOrigin().x(), transform_in.getOrigin().y(), transform_in.getOrigin().z(),
+      origin_in.x(), origin_in.y(), origin_in.z(),
       rotation_in.x(), rotation_in.y(),
       rotation_in.z(), rotation_in.w()
     );
@@ -298,7 +296,7 @@ bool BufferCore::setTransformImpl(
     if (frame->insertData(
         TransformStorage(
           stamp, rotation_in,
-          transform_in.getOrigin(), lookupOrInsertFrameNumber(stripped_frame_id), frame_number)))
+          origin_in, lookupOrInsertFrameNumber(stripped_frame_id), frame_number)))
     {
       frame_authority_[frame_number] = authority;
     } else {
