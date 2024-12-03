@@ -29,8 +29,9 @@ namespace tf2_basis {
     const auto& rotation = in.getRotation();
     const auto& rotation_out = out.mutable_rotation();
     rotation_out->set_x(rotation.getX());
-    rotation_out->set_x(rotation.getY());
-    rotation_out->set_x(rotation.getZ());
+    rotation_out->set_y(rotation.getY());
+    rotation_out->set_z(rotation.getZ());
+    rotation_out->set_w(rotation.getW());
 
     return out;
   };
