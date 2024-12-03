@@ -182,26 +182,34 @@ bool BufferCore::setTransform(
   const geometry_msgs::msg::TransformStamped & transform,
   const std::string & authority, bool is_static)
 {
-  tf2::Transform tf2_transform(tf2::Quaternion(
+  tf2::Quaternion rotation(
       transform.transform.rotation.x,
       transform.transform.rotation.y,
       transform.transform.rotation.z,
       transform.transform.rotation.w),
-    tf2::Vector3(
+  tf2::Vector3 origin(
       transform.transform.translation.x,
       transform.transform.translation.y,
-      transform.transform.translation.z));
+      transform.transform.translation.z);
   TimePoint time_point(std::chrono::nanoseconds(transform.header.stamp.nanosec) +
     std::chrono::duration_cast<std::chrono::nanoseconds>(
       std::chrono::seconds(
         transform.header.stamp.sec)));
   return setTransformImpl(
-    tf2_transform, transform.header.frame_id, transform.child_frame_id,
+    rotation, origin, transform.header.frame_id, transform.child_frame_id,
     time_point, authority, is_static);
 }
 
 bool BufferCore::setTransformImpl(
   const tf2::Transform & transform_in, const std::string frame_id,
+  const std::string child_frame_id, const TimePoint stamp,
+  const std::string & authority, bool is_static)
+{
+  return setTransformImpl(transform_in.getOrigin(), transform_in.getRotation(), frame_id, child_frame_id, stamp, authority, is_static);
+}
+
+bool BufferCore::setTransformImpl(
+  const tf2::Vector3 & origin_in, const tf2::Quaternion & rotation_in, const std::string & frame_id,
   const std::string child_frame_id, const TimePoint stamp,
   const std::string & authority, bool is_static)
 {
