@@ -41,12 +41,12 @@ namespace tf2_basis {
 
     out.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(google::protobuf::util::TimeUtil::TimestampToNanoseconds(in.timestamp())));
     out.frame_id_ = in.parent_frame_id();
-    out.getOrigin() = {
+    out.setOrigin({
       in.translation().x(), in.translation().y(), in.translation().z()
-    };
-    out.getRotation() = {
+    });
+    out.setRotation({
       in.rotation().x(), in.rotation().y(), in.rotation().z(), in.rotation().w()
-    };
+    });
 
     return out;
   };
