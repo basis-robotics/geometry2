@@ -6,16 +6,16 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif()
 
-include(FetchContent)
 
+if(PROJECT_IS_TOP_LEVEL)
+include(FetchContent)
 FetchContent_Declare(
     basis
-    SOURCE_DIR ${BASIS_SOURCE_ROOT}
     GIT_REPOSITORY https://github.com/basis-robotics/basis.git
     GIT_TAG main
 )
-
 FetchContent_MakeAvailable(basis)
+endif()
 
 if(NOT BASIS_SOURCE_ROOT)
   message( FATAL_ERROR "Basis is missing!" )
