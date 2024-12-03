@@ -79,12 +79,17 @@ BufferCoreROSConversions::lookupTransform(
   const std::string & source_frame, const tf2::TimePoint & source_time,
   const std::string & fixed_frame) const
 {
-  return lookupTransform(
+  const tf2::Stamped<tf2::Transform> stamped_transform = lookupTransformTf2(
     target_frame,
     target_time,
     source_frame,
     source_time,
     fixed_frame);
+
+  geometry_msgs::msg::TransformStamped msg = tf2::toMsg(stamped_transform);
+  msg.child_frame_id = source_frame;
+
+  return msg;
 }
 
 geometry_msgs::msg::VelocityStamped BufferCoreROSConversions::lookupVelocity(

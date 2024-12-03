@@ -48,15 +48,8 @@
 #include "tf2/LinearMath/Transform.h"
 #include "tf2/LinearMath/Vector3.h"
 
-#if TF2_ROS_FREE_CORE
-// TODO: TF2 logging helper
-#define RCUTILS_LOG_WARN_THROTTLE(...)
-#define RCUTILS_STEADY_TIME(...)
-#define RCUTILS_LOG_ERROR(...)
-#define RCUTILS_LOG_WARN(...)
-#else
 #include "rcutils/logging_macros.h"
-#endif
+
 namespace tf2
 {
 
