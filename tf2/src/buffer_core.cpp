@@ -200,14 +200,6 @@ bool BufferCore::setTransform(
     time_point, authority, is_static);
 }
 
-// bool BufferCore::setTransformImpl(
-//   const tf2::Transform & transform_in, const std::string frame_id,
-//   const std::string child_frame_id, const TimePoint stamp,
-//   const std::string & authority, bool is_static)
-// {
-//   return setTransformImpl(transform_in.getOrigin(), transform_in.getRotation(), frame_id, child_frame_id, stamp, authority, is_static);
-// }
-
 bool BufferCore::setTransformImpl(
   const tf2::Vector3 & origin_in, const tf2::Quaternion & rotation_in, const std::string & frame_id,
   const std::string child_frame_id, const TimePoint stamp,
