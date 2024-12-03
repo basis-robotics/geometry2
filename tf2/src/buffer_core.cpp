@@ -265,7 +265,7 @@ bool BufferCore::setTransformImpl(
 
     if (frame->insertData(
         TransformStorage(
-          stamp, transform_in.getRotation(),
+          stamp, rotation_in,
           transform_in.getOrigin(), lookupOrInsertFrameNumber(stripped_frame_id), frame_number)))
     {
       frame_authority_[frame_number] = authority;
