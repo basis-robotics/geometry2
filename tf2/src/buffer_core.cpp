@@ -231,27 +231,29 @@ bool BufferCore::setTransformImpl(
     error_exists = true;
   }
 
+  const tf2::Quaternion rotation_in = transform_in.getRotation();
+
   if (std::isnan(transform_in.getOrigin().x()) || std::isnan(transform_in.getOrigin().y()) ||
     std::isnan(transform_in.getOrigin().z()) ||
-    std::isnan(transform_in.getRotation().x()) || std::isnan(transform_in.getRotation().y()) ||
-    std::isnan(transform_in.getRotation().z()) || std::isnan(transform_in.getRotation().w()))
+    std::isnan(rotation_in.x()) || std::isnan(rotation_in.y()) ||
+    std::isnan(rotation_in.z()) || std::isnan(rotation_in.w()))
   {
     RCUTILS_LOG_ERROR(
       "TF_NAN_INPUT: Ignoring transform for child_frame_id \"%s\" from authority \"%s\" because"
       " of a nan value in the transform (%f %f %f) (%f %f %f %f)",
       stripped_child_frame_id.c_str(), authority.c_str(),
       transform_in.getOrigin().x(), transform_in.getOrigin().y(), transform_in.getOrigin().z(),
-      transform_in.getRotation().x(), transform_in.getRotation().y(),
-      transform_in.getRotation().z(), transform_in.getRotation().w()
+      rotation_in.x(), rotation_in.y(),
+      rotation_in.z(), rotation_in.w()
     );
     error_exists = true;
   }
 
-  bool valid = std::abs(
-    (transform_in.getRotation().w() * transform_in.getRotation().w() +
-    transform_in.getRotation().x() * transform_in.getRotation().x() +
-    transform_in.getRotation().y() * transform_in.getRotation().y() +
-    transform_in.getRotation().z() * transform_in.getRotation().z()) - 1.0f) <
+  const bool valid = std::abs(
+    (rotation_in.w() * rotation_in.w() +
+    rotation_in.x() * rotation_in.x() +
+    rotation_in.y() * rotation_in.y() +
+    rotation_in.z() * rotation_in.z()) - 1.0f) <
     QUATERNION_NORMALIZATION_TOLERANCE;
 
   if (!valid) {
@@ -259,8 +261,8 @@ bool BufferCore::setTransformImpl(
       "TF_DENORMALIZED_QUATERNION: Ignoring transform for child_frame_id \"%s\" from authority"
       " \"%s\" because of an invalid quaternion in the transform (%f %f %f %f)",
       stripped_child_frame_id.c_str(), authority.c_str(),
-      transform_in.getRotation().x(), transform_in.getRotation().y(),
-      transform_in.getRotation().z(), transform_in.getRotation().w());
+      rotation_in.x(), rotation_in.y(),
+      rotation_in.z(), rotation_in.w());
     error_exists = true;
   }
 
