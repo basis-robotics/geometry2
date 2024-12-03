@@ -9,6 +9,7 @@ namespace tf2_basis
 tf2::TimePoint fromBasis(const basis::core::MonotonicTime & time);
 basis::core::MonotonicTime toBasis(const tf2::TimePoint & time);
 foxglove::FrameTransform toFoxglove(const tf2::Stamped<tf2::Transform>& in, const std::string& child_frame_id);
+tf2::Stamped<tf2::Transform> fromFoxglove(const foxglove::FrameTransform& in);
 
 class Buffer : public tf2::BufferCore {
 public:
