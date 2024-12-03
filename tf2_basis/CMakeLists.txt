@@ -24,6 +24,7 @@ set(TF2_DIR $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../tf2>)
 
 #CPP Libraries
 add_library(tf2 ${TF2_DIR}/src/cache.cpp ${TF2_DIR}/src/buffer_core.cpp ${TF2_DIR}/src/static_cache.cpp ${TF2_DIR}/src/time.cpp)
+target_link_libraries(tf2 basis::core::logging)
 target_include_directories(tf2 PUBLIC include_ros "${TF2_DIR}/include")
 
 add_library(tf2_basis src/tf2_basis.cpp)
