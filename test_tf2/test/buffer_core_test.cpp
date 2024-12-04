@@ -1372,6 +1372,7 @@ TEST(BufferCore_lookupTransform, multi_configuration)
 //
 
 // Runs an equality check between a and b, allowing for the valid case that a == -b
+// https://gamedev.stackexchange.com/questions/75072/how-can-i-compare-two-quaternions-for-logical-equality/75077#75077
 bool CheckQuaternionNear(const geometry_msgs::msg::Quaternion & a, const tf2::Quaternion & b, double epsilon)
 {
   return (

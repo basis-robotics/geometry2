@@ -67,6 +67,24 @@ geometry_msgs::msg::TransformStamped generate_stamped_transform()
   return t;
 }
 
+// Runs an equality check between a and b, allowing for the valid case that a == -b
+// https://gamedev.stackexchange.com/questions/75072/how-can-i-compare-two-quaternions-for-logical-equality/75077#75077
+bool CheckQuaternionNear(const geometry_msgs::msg::Quaternion & a, const tf2::Quaternion & b, double epsilon)
+{
+  return (
+      (std::abs(a.x - b.x()) < epsilon) &&
+      (std::abs(a.y - b.y()) < epsilon) &&
+      (std::abs(a.z - b.z()) < epsilon) &&
+      (std::abs(a.w - b.w()) < epsilon)
+    ) ||
+    (
+      (std::abs(a.x + b.x()) < epsilon) &&
+      (std::abs(a.y + b.y()) < epsilon) &&
+      (std::abs(a.z + b.z()) < epsilon) &&
+      (std::abs(a.w + b.w()) < epsilon)
+    );
+}
+
 TEST(TfGeometry, Conversions)
 {
   // Quaternion
@@ -123,10 +141,7 @@ TEST(TfGeometry, Conversions)
     geometry_msgs::msg::Transform tf_msg;
     tf2::convert(tf_, tf_msg);
 
-    EXPECT_NEAR(rotation.getX(), tf_msg.rotation.x, EPS);
-    EXPECT_NEAR(rotation.getY(), tf_msg.rotation.y, EPS);
-    EXPECT_NEAR(rotation.getZ(), tf_msg.rotation.z, EPS);
-    EXPECT_NEAR(rotation.getW(), tf_msg.rotation.w, EPS);
+    EXPECT_PRED3(CheckQuaternionNear, tf_msg.rotation, rotation, EPS);
     EXPECT_NEAR(translation.getX(), tf_msg.translation.x, EPS);
     EXPECT_NEAR(translation.getY(), tf_msg.translation.y, EPS);
     EXPECT_NEAR(translation.getZ(), tf_msg.translation.z, EPS);
@@ -134,10 +149,7 @@ TEST(TfGeometry, Conversions)
     tf2::Transform tf_from_msg;
     tf2::convert(tf_msg, tf_from_msg);
 
-    EXPECT_NEAR(tf_from_msg.getRotation().getX(), tf_msg.rotation.x, EPS);
-    EXPECT_NEAR(tf_from_msg.getRotation().getY(), tf_msg.rotation.y, EPS);
-    EXPECT_NEAR(tf_from_msg.getRotation().getZ(), tf_msg.rotation.z, EPS);
-    EXPECT_NEAR(tf_from_msg.getRotation().getW(), tf_msg.rotation.w, EPS);
+    EXPECT_PRED3(CheckQuaternionNear, tf_msg.rotation, tf_from_msg.getRotation(), EPS);
     EXPECT_NEAR(tf_from_msg.getOrigin().getX(), tf_msg.translation.x, EPS);
     EXPECT_NEAR(tf_from_msg.getOrigin().getY(), tf_msg.translation.y, EPS);
     EXPECT_NEAR(tf_from_msg.getOrigin().getZ(), tf_msg.translation.z, EPS);
@@ -153,10 +165,7 @@ TEST(TfGeometry, Conversions)
     geometry_msgs::msg::TransformStamped tf_stamped_msg;
     tf2::convert(tf_stamped, tf_stamped_msg);
 
-    EXPECT_NEAR(rotation.getX(), tf_stamped_msg.transform.rotation.x, EPS);
-    EXPECT_NEAR(rotation.getY(), tf_stamped_msg.transform.rotation.y, EPS);
-    EXPECT_NEAR(rotation.getZ(), tf_stamped_msg.transform.rotation.z, EPS);
-    EXPECT_NEAR(rotation.getW(), tf_stamped_msg.transform.rotation.w, EPS);
+    EXPECT_PRED3(CheckQuaternionNear, tf_stamped_msg.transform.rotation, rotation, EPS);
     EXPECT_NEAR(translation.getX(), tf_stamped_msg.transform.translation.x, EPS);
     EXPECT_NEAR(translation.getY(), tf_stamped_msg.transform.translation.y, EPS);
     EXPECT_NEAR(translation.getZ(), tf_stamped_msg.transform.translation.z, EPS);
@@ -165,10 +174,7 @@ TEST(TfGeometry, Conversions)
     tf2::Stamped<tf2::Transform> tf_from_msg;
     tf2::convert(tf_stamped_msg, tf_from_msg);
 
-    EXPECT_NEAR(tf_from_msg.getRotation().getX(), tf_stamped_msg.transform.rotation.x, EPS);
-    EXPECT_NEAR(tf_from_msg.getRotation().getY(), tf_stamped_msg.transform.rotation.y, EPS);
-    EXPECT_NEAR(tf_from_msg.getRotation().getZ(), tf_stamped_msg.transform.rotation.z, EPS);
-    EXPECT_NEAR(tf_from_msg.getRotation().getW(), tf_stamped_msg.transform.rotation.w, EPS);
+    EXPECT_PRED3(CheckQuaternionNear, tf_stamped_msg.transform.rotation, rotation, EPS);
     EXPECT_NEAR(tf_from_msg.getOrigin().getX(), tf_stamped_msg.transform.translation.x, EPS);
     EXPECT_NEAR(tf_from_msg.getOrigin().getY(), tf_stamped_msg.transform.translation.y, EPS);
     EXPECT_NEAR(tf_from_msg.getOrigin().getZ(), tf_stamped_msg.transform.translation.z, EPS);
