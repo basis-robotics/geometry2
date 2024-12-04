@@ -1371,19 +1371,20 @@ TEST(BufferCore_lookupTransform, multi_configuration)
 // }
 //
 
+// Runs an equality check between a and b, allowing for the valid case that a == -b
 bool CheckQuaternionNear(const geometry_msgs::msg::Quaternion & a, const tf2::Quaternion & b, double epsilon)
 {
   return (
-      (a.x - b.x() < epsilon) &&
-      (a.y - b.y() < epsilon) &&
-      (a.z - b.z() < epsilon) &&
-      (a.w - b.w() < epsilon)
+      (std::abs(a.x - b.x()) < epsilon) &&
+      (std::abs(a.y - b.y()) < epsilon) &&
+      (std::abs(a.z - b.z()) < epsilon) &&
+      (std::abs(a.w - b.w()) < epsilon)
     ) ||
     (
-      (a.x + b.x() < epsilon) &&
-      (a.y + b.y() < epsilon) &&
-      (a.z + b.z() < epsilon) &&
-      (a.w + b.w() < epsilon)
+      (std::abs(a.x + b.x()) < epsilon) &&
+      (std::abs(a.y + b.y()) < epsilon) &&
+      (std::abs(a.z + b.z()) < epsilon) &&
+      (std::abs(a.w + b.w()) < epsilon)
     );
 }
 
