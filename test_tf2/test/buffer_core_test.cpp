@@ -1371,6 +1371,22 @@ TEST(BufferCore_lookupTransform, multi_configuration)
 // }
 //
 
+bool CheckQuaternionNear(const geometry_msgs::msg::Quaternion & a, const tf2::Quaternion & b, double epsilon)
+{
+  return (
+      (a.x - b.x() < epsilon) &&
+      (a.y - b.y() < epsilon) &&
+      (a.z - b.z() < epsilon) &&
+      (a.w - b.w() < epsilon)
+    ) ||
+    (
+      (a.x + b.x() < epsilon) &&
+      (a.y + b.y() < epsilon) &&
+      (a.z + b.z() < epsilon) &&
+      (a.w + b.w() < epsilon)
+    );
+}
+
 TEST(BufferCore_lookupTransform, ring_45_configuration)
 {
   double epsilon = 1e-6;
@@ -1458,8 +1474,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(M_PI / 8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(M_PI / 8), epsilon);
+      EXPECT_PRED3(CheckQuaternionNear, outpose.transform.rotation, tf2::Quaternion(0, 0, sin(M_PI / 8), cos(M_PI / 8)), epsilon);
     }
     // Inverse Chaining 1
     else if ((source_frame == "b" && target_frame == "a") ||
@@ -1474,10 +1489,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.x, sqrt(2) / 2 - 1, epsilon);
       EXPECT_NEAR(outpose.transform.translation.y, -sqrt(2) / 2, epsilon);
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(-M_PI / 8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(-M_PI / 8), epsilon);
+      EXPECT_PRED3(CheckQuaternionNear, outpose.transform.rotation, tf2::Quaternion(0, 0, sin(-M_PI / 8), cos(-M_PI / 8)), epsilon);
     }
     // Chaining 2
     else if ((source_frame == "a" && target_frame == "c") ||
@@ -1491,10 +1503,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.x, -1, epsilon);
       EXPECT_NEAR(outpose.transform.translation.y, 1, epsilon);
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(M_PI / 4), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(M_PI / 4), epsilon);
+      EXPECT_PRED3(CheckQuaternionNear, outpose.transform.rotation, tf2::Quaternion(0, 0, sin(M_PI / 4), cos(M_PI / 4)), epsilon);
     }
     // Inverse Chaining 2
     else if ((source_frame == "c" && target_frame == "a") ||
@@ -1508,10 +1517,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.x, -1, epsilon);
       EXPECT_NEAR(outpose.transform.translation.y, -1, epsilon);
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(-M_PI / 4), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(-M_PI / 4), epsilon);
+      EXPECT_PRED3(CheckQuaternionNear, outpose.transform.rotation, tf2::Quaternion(0, 0, sin(-M_PI / 4), cos(-M_PI / 4)), epsilon);
     }
     // Chaining 3
     else if ((source_frame == "a" && target_frame == "d") ||
@@ -1524,10 +1530,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.x, -1 - sqrt(2) / 2, epsilon);
       EXPECT_NEAR(outpose.transform.translation.y, sqrt(2) / 2, epsilon);
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(M_PI * 3 / 8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(M_PI * 3 / 8), epsilon);
+      EXPECT_PRED3(CheckQuaternionNear, outpose.transform.rotation, tf2::Quaternion(0, 0, sin(M_PI * 3 / 8), cos(M_PI * 3 / 8)), epsilon);
     }
     // Inverse Chaining 3
     else if ((target_frame == "a" && source_frame == "d") ||
@@ -1540,10 +1543,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.x, -1 - sqrt(2) / 2, epsilon);
       EXPECT_NEAR(outpose.transform.translation.y, -sqrt(2) / 2, epsilon);
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, -sin(-M_PI * 3 / 8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, -cos(-M_PI * 3 / 8), epsilon);
+      EXPECT_PRED3(CheckQuaternionNear, outpose.transform.rotation, tf2::Quaternion(0, 0, -sin(-M_PI * 3 / 8), -cos(-M_PI * 3 / 8)), epsilon);
     }
     // Chaining 4
     else if ((source_frame == "a" && target_frame == "e") ||
@@ -1557,8 +1557,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(M_PI / 2), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(M_PI / 2), epsilon);
+      EXPECT_PRED3(CheckQuaternionNear, outpose.transform.rotation, tf2::Quaternion(0, 0, sin(M_PI / 2), cos(M_PI / 2)), epsilon);
     }
     // Inverse Chaining 4
     else if ((target_frame == "a" && source_frame == "e") ||
@@ -1572,8 +1571,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, -sin(-M_PI / 2), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(-M_PI / 2), epsilon);
+      EXPECT_PRED3(CheckQuaternionNear, outpose.transform.rotation, tf2::Quaternion(0, 0, -sin(-M_PI / 2), cos(-M_PI / 2)), epsilon);
     }
     // Chaining 5
     else if ((source_frame == "a" && target_frame == "f") ||
@@ -1586,8 +1584,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(M_PI * 5 / 8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, cos(M_PI * 5 / 8), epsilon);
+      EXPECT_PRED3(CheckQuaternionNear, outpose.transform.rotation, tf2::Quaternion(0, 0, sin(M_PI * 5 / 8), cos(M_PI * 5 / 8)), epsilon);
     }
     // Inverse Chaining 5
     else if ((target_frame == "a" && source_frame == "f") ||
@@ -1600,8 +1597,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, -sin(-M_PI * 5 / 8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, -cos(-M_PI * 5 / 8), epsilon);
+      EXPECT_PRED3(CheckQuaternionNear, outpose.transform.rotation, tf2::Quaternion(0, 0, -sin(-M_PI * 5 / 8), -cos(-M_PI * 5 / 8)), epsilon);
     }
     // Chaining 6
     else if ((source_frame == "a" && target_frame == "g") ||
@@ -1613,8 +1609,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, -sin(M_PI * 6 / 8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, -cos(M_PI * 6 / 8), epsilon);
+      EXPECT_PRED3(CheckQuaternionNear, outpose.transform.rotation, tf2::Quaternion(0, 0, -sin(M_PI * 6 / 8), -cos(M_PI * 6 / 8)), epsilon);
     }
     // Inverse Chaining 6
     else if ((target_frame == "a" && source_frame == "g") ||
@@ -1626,8 +1621,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, -sin(-M_PI * 6 / 8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, -cos(-M_PI * 6 / 8), epsilon);
+      EXPECT_PRED3(CheckQuaternionNear, outpose.transform.rotation, tf2::Quaternion(0, 0, -sin(-M_PI * 6 / 8), -cos(-M_PI * 6 / 8)), epsilon);
     }
     // Chaining 7
     else if ((source_frame == "a" && target_frame == "h") ||
@@ -1638,8 +1632,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(-M_PI * 7 / 8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, -cos(-M_PI * 7 / 8), epsilon);
+      EXPECT_PRED3(CheckQuaternionNear, outpose.transform.rotation, tf2::Quaternion(0, 0, sin(-M_PI * 7 / 8), -cos(-M_PI * 7 / 8)), epsilon);
     }
     // Inverse Chaining 7
     else if ((target_frame == "a" && source_frame == "h") ||
@@ -1650,8 +1643,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.x, 0, epsilon);
       EXPECT_NEAR(outpose.transform.rotation.y, 0, epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.z, sin(M_PI * 7 / 8), epsilon);
-      EXPECT_NEAR(outpose.transform.rotation.w, -cos(M_PI * 7 / 8), epsilon);
+      EXPECT_PRED3(CheckQuaternionNear, outpose.transform.rotation, tf2::Quaternion(0, 0, sin(M_PI * 6 / 8), -cos(M_PI * 6 / 8)), epsilon);;
     } else {
       EXPECT_FALSE("Ring_45 testing Shouldn't get here");
       printf(
