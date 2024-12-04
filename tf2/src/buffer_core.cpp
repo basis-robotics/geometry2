@@ -698,7 +698,6 @@ BufferCore::lookupTransform(
   const std::string & target_frame, const std::string & source_frame,
   const TimePoint & time) const
 {
-  tf2::Transform transform;
   TimePoint time_out;
   tf2::Vector3 origin;
   tf2::Quaternion rotation;
