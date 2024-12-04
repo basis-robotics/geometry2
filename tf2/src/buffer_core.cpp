@@ -776,7 +776,7 @@ void BufferCore::lookupTransformImpl(
 
   if (target_frame == source_frame) {
     rotation_out = Quaternion::getIdentity();
-		origin_out.setValue(tf2Scalar(0.0), tf2Scalar(0.0), tf2Scalar(0.0));
+    origin_out.setValue(tf2Scalar(0.0), tf2Scalar(0.0), tf2Scalar(0.0));
 
     if (time == TimePointZero) {
       CompactFrameID target_id = lookupFrameNumber(target_frame);
