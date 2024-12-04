@@ -387,7 +387,10 @@ private:
     const std::string & authority, bool is_static);
   void lookupTransformImpl(
     const std::string & target_frame, const std::string & source_frame,
-    const TimePoint & time_in, tf2::Transform & transform, TimePoint & time_out) const;
+    const TimePoint & time_in, tf2::Transform & transform_out, TimePoint & time_out) const;
+  void lookupTransformImpl(
+    const std::string & target_frame, const std::string & source_frame,
+    const TimePoint & time_in, tf2::Vector3 & origin_out, tf2::Quaternion & rotation_out, TimePoint & time_out) const;
 
   void lookupTransformImpl(
     const std::string & target_frame, const TimePoint & target_time,

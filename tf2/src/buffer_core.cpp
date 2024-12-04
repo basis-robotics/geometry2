@@ -700,15 +700,17 @@ BufferCore::lookupTransform(
 {
   tf2::Transform transform;
   TimePoint time_out;
-  lookupTransformImpl(target_frame, source_frame, time, transform, time_out);
+  tf2::Vector3 origin;
+  tf2::Quaternion rotation;
+  lookupTransformImpl(target_frame, source_frame, time, origin, rotation, time_out);
   geometry_msgs::msg::TransformStamped msg;
-  msg.transform.translation.x = transform.getOrigin().x();
-  msg.transform.translation.y = transform.getOrigin().y();
-  msg.transform.translation.z = transform.getOrigin().z();
-  msg.transform.rotation.x = transform.getRotation().x();
-  msg.transform.rotation.y = transform.getRotation().y();
-  msg.transform.rotation.z = transform.getRotation().z();
-  msg.transform.rotation.w = transform.getRotation().w();
+  msg.transform.translation.x = origin.x();
+  msg.transform.translation.y = origin.y();
+  msg.transform.translation.z = origin.z();
+  msg.transform.rotation.x = rotation.x();
+  msg.transform.rotation.y = rotation.y();
+  msg.transform.rotation.z = rotation.z();
+  msg.transform.rotation.w = rotation.w();
   std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
     time_out.time_since_epoch());
   std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(
@@ -736,10 +738,11 @@ BufferCore::lookupTransform(
   msg.transform.translation.x = transform.getOrigin().x();
   msg.transform.translation.y = transform.getOrigin().y();
   msg.transform.translation.z = transform.getOrigin().z();
-  msg.transform.rotation.x = transform.getRotation().x();
-  msg.transform.rotation.y = transform.getRotation().y();
-  msg.transform.rotation.z = transform.getRotation().z();
-  msg.transform.rotation.w = transform.getRotation().w();
+  tf2::Quaternion rotation = transform.getRotation();
+  msg.transform.rotation.x = rotation.x();
+  msg.transform.rotation.y = rotation.y();
+  msg.transform.rotation.z = rotation.z();
+  msg.transform.rotation.w = rotation.w();
   std::chrono::nanoseconds ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
     time_out.time_since_epoch());
   std::chrono::seconds s = std::chrono::duration_cast<std::chrono::seconds>(
@@ -755,13 +758,25 @@ BufferCore::lookupTransform(
 void BufferCore::lookupTransformImpl(
   const std::string & target_frame,
   const std::string & source_frame,
-  const TimePoint & time, tf2::Transform & transform,
+  const TimePoint & time, tf2::Transform & transform_out,
+  TimePoint & time_out) const
+{
+  tf2::Quaternion rotation;
+  lookupTransformImpl(target_frame, source_frame, time, transform_out.getOrigin(), rotation, time_out);
+  transform_out.setRotation(rotation);
+}
+
+void BufferCore::lookupTransformImpl(
+  const std::string & target_frame,
+  const std::string & source_frame,
+  const TimePoint & time, tf2::Vector3 & origin_out, tf2::Quaternion & rotation_out,
   TimePoint & time_out) const
 {
   std::unique_lock<std::mutex> lock(frame_mutex_);
 
   if (target_frame == source_frame) {
-    transform.setIdentity();
+    rotation_out = Quaternion::getIdentity();
+		origin_out.setValue(tf2Scalar(0.0), tf2Scalar(0.0), tf2Scalar(0.0));
 
     if (time == TimePointZero) {
       CompactFrameID target_id = lookupFrameNumber(target_frame);
@@ -805,8 +820,8 @@ void BufferCore::lookupTransformImpl(
   }
 
   time_out = accum.time;
-  transform.setOrigin(accum.result_vec);
-  transform.setRotation(accum.result_quat);
+  origin_out = accum.result_vec;
+  rotation_out = accum.result_quat;
 }
 
 void BufferCore::lookupTransformImpl(
