@@ -765,6 +765,21 @@ void BufferCore::lookupTransformImpl(
   transform_out.setRotation(rotation);
 }
 
+ /** \brief Private member function that looks up a transform between two frames 
+    * at a given time and return the the transform as a TF2::transform. If a transform is 
+    * not possible raise the appropriate error. The rotation and orientation
+    * components are returned separately by reference. 
+    * \param target_frame -- the name of the target frame which we are transforming to
+    * \param source_frame -- the name of frame we are transforming from
+    * \param time -- the timepoint at which the transform should occur
+    * \param origin_out -- the position component of the desired transform
+    *  passed by reference
+    * \param origin_out -- the position component of the desired transform
+    *  passed by reference    
+    * \param rotation_out -- the rotation component of the desired transform
+    *  passed by reference
+    * \return void, the Transform between the input frames, and the time at which it was calculated are returned by reference
+    */
 void BufferCore::lookupTransformImpl(
   const std::string & target_frame,
   const std::string & source_frame,
