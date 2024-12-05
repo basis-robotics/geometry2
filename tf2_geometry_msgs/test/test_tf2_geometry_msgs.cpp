@@ -69,7 +69,8 @@ geometry_msgs::msg::TransformStamped generate_stamped_transform()
 
 // Runs an equality check between a and b, allowing for the valid case that a == -b
 // https://gamedev.stackexchange.com/questions/75072/how-can-i-compare-two-quaternions-for-logical-equality/75077#75077
-bool CheckQuaternionNear(const geometry_msgs::msg::Quaternion & a, const tf2::Quaternion & b, double epsilon)
+bool CheckQuaternionNear(const geometry_msgs::msg::Quaternion & a, 
+                                                   const tf2::Quaternion & b, double epsilon)
 {
   return (
       (std::abs(a.x - b.x()) < epsilon) &&
@@ -141,6 +142,8 @@ TEST(TfGeometry, Conversions)
     geometry_msgs::msg::Transform tf_msg;
     tf2::convert(tf_, tf_msg);
 
+    // Calls function in first position, with arguments in second and third 
+    // position along with epsilon value defined in the fourth position.
     EXPECT_PRED3(CheckQuaternionNear, tf_msg.rotation, rotation, EPS);
     EXPECT_NEAR(translation.getX(), tf_msg.translation.x, EPS);
     EXPECT_NEAR(translation.getY(), tf_msg.translation.y, EPS);
@@ -530,7 +533,8 @@ TEST(TfGeometry, Quaternion)
       const geometry_msgs::msg::QuaternionStamped q_simple = tf_buffer->transform(
         q1, "B", tf2::durationFromSec(
           2.0));
-      EXPECT_PRED3(CheckQuaternionNear, q_simple.quaternion, tf2::Quaternion(M_SQRT1_2, 0, -M_SQRT1_2, 0), EPS);
+      EXPECT_PRED3(CheckQuaternionNear, q_simple.quaternion,
+        tf2::Quaternion(M_SQRT1_2, 0, -M_SQRT1_2, 0), EPS);
     }
 
     // advanced api
@@ -538,7 +542,8 @@ TEST(TfGeometry, Quaternion)
       const geometry_msgs::msg::QuaternionStamped q_advanced = tf_buffer->transform(
         q1, "B", tf2::timeFromSec(2.0),
         "A", tf2::durationFromSec(3.0));
-      EXPECT_PRED3(CheckQuaternionNear, q_advanced.quaternion, tf2::Quaternion(M_SQRT1_2, 0, -M_SQRT1_2, 0), EPS);
+      EXPECT_PRED3(CheckQuaternionNear, q_advanced.quaternion, 
+        tf2::Quaternion(M_SQRT1_2, 0, -M_SQRT1_2, 0), EPS);
     }
   }
 }
