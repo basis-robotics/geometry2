@@ -1371,6 +1371,21 @@ TEST(BufferCore_lookupTransform, multi_configuration)
 // }
 //
 
+// Helpers to print quaternions for tests
+// Must be defined in the namespace the class to be printed in lives, as per
+// https://github.com/google/googletest/blob/main/docs/advanced.md#teaching-googletest-how-to-print-your-values
+namespace geometry_msgs::msg {
+  void PrintTo(const Quaternion& q, std::ostream* os) {
+    *os << "{" << q.x << ", " << q.y << ", " << q.z << ", " << q.w << "}";
+  }
+}
+
+namespace tf2 {
+  void PrintTo(const Quaternion& q, std::ostream* os) {
+    *os << "{" << q.x() << ", " << q.y() << ", " << q.z() << ", " << q.w() << "}";
+  }
+}
+
 // Runs an equality check between a and b, allowing for the valid case that a == -b
 // https://gamedev.stackexchange.com/questions/75072/how-can-i-compare-two-quaternions-for-logical-equality/75077#75077
 bool CheckQuaternionNear(const geometry_msgs::msg::Quaternion & a, const tf2::Quaternion & b, double epsilon)
