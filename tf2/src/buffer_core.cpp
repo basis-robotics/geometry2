@@ -772,7 +772,8 @@ void BufferCore::lookupTransformImpl(
   TimePoint & time_out) const
 {
   tf2::Quaternion rotation;
-  lookupTransformImpl(target_frame, source_frame, time, transform_out.getOrigin(), rotation, time_out);
+  lookupTransformImpl(target_frame, source_frame, time,
+    transform_out.getOrigin(), rotation, time_out);
   transform_out.setRotation(rotation);
 }
 

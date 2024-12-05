@@ -69,7 +69,8 @@ geometry_msgs::msg::TransformStamped generate_stamped_transform()
 
 // Runs an equality check between a and b, allowing for the valid case that a == -b
 // https://gamedev.stackexchange.com/questions/75072/how-can-i-compare-two-quaternions-for-logical-equality/75077#75077
-bool CheckQuaternionNear(const geometry_msgs::msg::Quaternion & a, const tf2::Quaternion & b, double epsilon)
+bool CheckQuaternionNear(const geometry_msgs::msg::Quaternion & a, 
+                                                   const tf2::Quaternion & b, double epsilon)
 {
   return (
       (std::abs(a.x - b.x()) < epsilon) &&
@@ -532,7 +533,8 @@ TEST(TfGeometry, Quaternion)
       const geometry_msgs::msg::QuaternionStamped q_simple = tf_buffer->transform(
         q1, "B", tf2::durationFromSec(
           2.0));
-      EXPECT_PRED3(CheckQuaternionNear, q_simple.quaternion, tf2::Quaternion(M_SQRT1_2, 0, -M_SQRT1_2, 0), EPS);
+      EXPECT_PRED3(CheckQuaternionNear, q_simple.quaternion,
+        tf2::Quaternion(M_SQRT1_2, 0, -M_SQRT1_2, 0), EPS);
     }
 
     // advanced api
