@@ -69,21 +69,22 @@ geometry_msgs::msg::TransformStamped generate_stamped_transform()
 
 // Runs an equality check between a and b, allowing for the valid case that a == -b
 // https://gamedev.stackexchange.com/questions/75072/how-can-i-compare-two-quaternions-for-logical-equality/75077#75077
-bool CheckQuaternionNear(const geometry_msgs::msg::Quaternion & a, 
-                                                   const tf2::Quaternion & b, double epsilon)
+bool CheckQuaternionNear(
+  const geometry_msgs::msg::Quaternion & a,
+  const tf2::Quaternion & b, double epsilon)
 {
   return (
-      (std::abs(a.x - b.x()) < epsilon) &&
-      (std::abs(a.y - b.y()) < epsilon) &&
-      (std::abs(a.z - b.z()) < epsilon) &&
-      (std::abs(a.w - b.w()) < epsilon)
-    ) ||
-    (
-      (std::abs(a.x + b.x()) < epsilon) &&
-      (std::abs(a.y + b.y()) < epsilon) &&
-      (std::abs(a.z + b.z()) < epsilon) &&
-      (std::abs(a.w + b.w()) < epsilon)
-    );
+    (std::abs(a.x - b.x()) < epsilon) &&
+    (std::abs(a.y - b.y()) < epsilon) &&
+    (std::abs(a.z - b.z()) < epsilon) &&
+    (std::abs(a.w - b.w()) < epsilon)
+  ) ||
+         (
+    (std::abs(a.x + b.x()) < epsilon) &&
+    (std::abs(a.y + b.y()) < epsilon) &&
+    (std::abs(a.z + b.z()) < epsilon) &&
+    (std::abs(a.w + b.w()) < epsilon)
+         );
 }
 
 TEST(TfGeometry, Conversions)
@@ -142,7 +143,7 @@ TEST(TfGeometry, Conversions)
     geometry_msgs::msg::Transform tf_msg;
     tf2::convert(tf_, tf_msg);
 
-    // Calls function in first position, with arguments in second and third 
+    // Calls function in first position, with arguments in second and third
     // position along with epsilon value defined in the fourth position.
     EXPECT_PRED3(CheckQuaternionNear, tf_msg.rotation, rotation, EPS);
     EXPECT_NEAR(translation.getX(), tf_msg.translation.x, EPS);
