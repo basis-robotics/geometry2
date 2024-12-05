@@ -531,19 +531,17 @@ TEST(TfGeometry, Quaternion)
     // simple api
     {
       const geometry_msgs::msg::QuaternionStamped q_simple = tf_buffer->transform(
-        q1, "B", tf2::durationFromSec(
-          2.0));
-      EXPECT_PRED3(CheckQuaternionNear, q_simple.quaternion,
-        tf2::Quaternion(M_SQRT1_2, 0, -M_SQRT1_2, 0), EPS);
+        q1, "B", tf2::durationFromSec(2.0));
+      const tf2::Quaternion q_simple_should_equal(M_SQRT1_2, 0, -M_SQRT1_2, 0);
+      EXPECT_PRED3(CheckQuaternionNear, q_simple.quaternion, q_simple_should_equal, EPS);
     }
 
     // advanced api
     {
       const geometry_msgs::msg::QuaternionStamped q_advanced = tf_buffer->transform(
-        q1, "B", tf2::timeFromSec(2.0),
-        "A", tf2::durationFromSec(3.0));
-      EXPECT_PRED3(CheckQuaternionNear, q_advanced.quaternion, 
-        tf2::Quaternion(M_SQRT1_2, 0, -M_SQRT1_2, 0), EPS);
+        q1, "B", tf2::timeFromSec(2.0), "A", tf2::durationFromSec(3.0));
+      tf2::Quaternion q_advanced_should_equal(M_SQRT1_2, 0, -M_SQRT1_2, 0);
+      EXPECT_PRED3(CheckQuaternionNear, q_advanced.quaternion, q_advanced_should_equal, EPS);
     }
   }
 }
