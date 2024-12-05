@@ -141,6 +141,8 @@ TEST(TfGeometry, Conversions)
     geometry_msgs::msg::Transform tf_msg;
     tf2::convert(tf_, tf_msg);
 
+    // Calls function in first position, with arguments in second and third 
+    // position along with epsilon value defined in the fourth position.
     EXPECT_PRED3(CheckQuaternionNear, tf_msg.rotation, rotation, EPS);
     EXPECT_NEAR(translation.getX(), tf_msg.translation.x, EPS);
     EXPECT_NEAR(translation.getY(), tf_msg.translation.y, EPS);
