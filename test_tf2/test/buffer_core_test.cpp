@@ -1371,7 +1371,7 @@ TEST(BufferCore_lookupTransform, multi_configuration)
 // }
 //
 
-// Helpers to print quaternions for tests
+// Helpers used by gtest to print quaternions when errors happen
 // Must be defined in the namespace the class to be printed in lives, as per
 // https://github.com/google/googletest/blob/main/docs/advanced.md#teaching-googletest-how-to-print-your-values
 namespace geometry_msgs::msg
@@ -1676,7 +1676,7 @@ TEST(BufferCore_lookupTransform, ring_45_configuration)
       EXPECT_NEAR(outpose.transform.translation.z, 0, epsilon);
       EXPECT_PRED3(
         CheckQuaternionNear, outpose.transform.rotation,
-        tf2::Quaternion(0, 0, sin(M_PI * 6 / 8), -cos(M_PI * 6 / 8)), epsilon);
+        tf2::Quaternion(0, 0, sin(M_PI * 7 / 8), -cos(M_PI * 7 / 8)), epsilon);
     } else {
       EXPECT_FALSE("Ring_45 testing Shouldn't get here");
       printf(

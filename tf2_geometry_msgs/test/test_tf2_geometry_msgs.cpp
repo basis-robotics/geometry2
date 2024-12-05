@@ -67,7 +67,7 @@ geometry_msgs::msg::TransformStamped generate_stamped_transform()
   return t;
 }
 
-// Helpers to print quaternions for tests
+// Helpers used by gtest to print quaternions when errors happen
 // Must be defined in the namespace the class to be printed in lives, as per
 // https://github.com/google/googletest/blob/main/docs/advanced.md#teaching-googletest-how-to-print-your-values
 namespace geometry_msgs::msg
