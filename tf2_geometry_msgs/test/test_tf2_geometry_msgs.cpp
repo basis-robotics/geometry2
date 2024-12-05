@@ -540,7 +540,8 @@ TEST(TfGeometry, Quaternion)
       const geometry_msgs::msg::QuaternionStamped q_advanced = tf_buffer->transform(
         q1, "B", tf2::timeFromSec(2.0),
         "A", tf2::durationFromSec(3.0));
-      EXPECT_PRED3(CheckQuaternionNear, q_advanced.quaternion, tf2::Quaternion(M_SQRT1_2, 0, -M_SQRT1_2, 0), EPS);
+      EXPECT_PRED3(CheckQuaternionNear, q_advanced.quaternion, 
+        tf2::Quaternion(M_SQRT1_2, 0, -M_SQRT1_2, 0), EPS);
     }
   }
 }
