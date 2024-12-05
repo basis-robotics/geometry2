@@ -754,6 +754,17 @@ BufferCore::lookupTransform(
   return msg;
 }
 
+ /** \brief Private member function that looks up a transform between two frames 
+    * at a given time and return the the transform as a TF2::transform. If a transform is 
+    * not possible raise the appropriate error.
+    * \param target_frame -- the name of the target frame which we are transforming to
+    * \param source_frame -- the name of frame we are transforming from
+    * \param time -- the timepoint at which the transform should occur
+    * \param transform_out -- The transform, returned by reference, for the transform from source frame 
+    * to target frame at the given time
+    * \param time_out -- the time the transform was computed returned by reference.      
+    * \return void, the Transform between the input frames, and the time at which it was calculated are returned by reference
+    */
 void BufferCore::lookupTransformImpl(
   const std::string & target_frame,
   const std::string & source_frame,
