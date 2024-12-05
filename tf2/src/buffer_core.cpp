@@ -737,7 +737,7 @@ BufferCore::lookupTransform(
   msg.transform.translation.x = transform.getOrigin().x();
   msg.transform.translation.y = transform.getOrigin().y();
   msg.transform.translation.z = transform.getOrigin().z();
-  const tf2::Quaternion rotation = transform.getRotation();
+  tf2::Quaternion rotation = transform.getRotation();
   msg.transform.rotation.x = rotation.x();
   msg.transform.rotation.y = rotation.y();
   msg.transform.rotation.z = rotation.z();
