@@ -182,7 +182,7 @@ bool BufferCore::setTransform(
   const geometry_msgs::msg::TransformStamped & transform,
   const std::string & authority, bool is_static)
 {
-  tf2::Quaternion rotation(
+  const tf2::Quaternion rotation(
     transform.transform.rotation.x,
     transform.transform.rotation.y,
     transform.transform.rotation.z,
