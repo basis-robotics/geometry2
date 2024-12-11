@@ -1376,15 +1376,16 @@ TEST(BufferCore_lookupTransform, multi_configuration)
 // https://github.com/google/googletest/blob/main/docs/advanced.md#teaching-googletest-how-to-print-your-values
 namespace geometry_msgs::msg
 {
-void PrintTo(const Quaternion & q, std::ostream * os)
+std::ostream& operator<<(std::ostream& stream, const Quaternion & q)
 {
-  *os << "{" << q.x << ", " << q.y << ", " << q.z << ", " << q.w << "}";
+  stream << "{" << q.x << ", " << q.y << ", " << q.z << ", " << q.w << "}";
 }
 }
 
-std::ostream& operator<<(std::ostream& stream, const tf2::Quaternion & q)
+namespace tf2 {
+std::ostream& operator<<(std::ostream& stream, const Quaternion & q)
 {
-  *os << "{" << q.x() << ", " << q.y() << ", " << q.z() << ", " << q.w() << "}";
+  stream << "{" << q.x() << ", " << q.y() << ", " << q.z() << ", " << q.w() << "}";
 }
 }
 
