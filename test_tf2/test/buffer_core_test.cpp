@@ -1382,9 +1382,7 @@ void PrintTo(const Quaternion & q, std::ostream * os)
 }
 }
 
-namespace tf2
-{
-void PrintTo(const Quaternion & q, std::ostream * os)
+std::ostream& operator<<(std::ostream& stream, const tf2::Quaternion & q)
 {
   *os << "{" << q.x() << ", " << q.y() << ", " << q.z() << ", " << q.w() << "}";
 }
