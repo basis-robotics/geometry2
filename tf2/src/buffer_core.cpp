@@ -187,7 +187,7 @@ bool BufferCore::setTransform(
     transform.transform.rotation.y,
     transform.transform.rotation.z,
     transform.transform.rotation.w);
-  tf2::Vector3 origin(
+  const tf2::Vector3 origin(
     transform.transform.translation.x,
     transform.transform.translation.y,
     transform.transform.translation.z);
