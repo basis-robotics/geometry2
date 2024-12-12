@@ -121,11 +121,11 @@ public:
    * tf2::ExtrapolationException, tf2::InvalidArgumentException
    */
   TF2_PUBLIC
-  tf2::Stamped<tf2::Transform>
+  void
   lookupTransformTf2(
     const std::string & target_frame,
     const std::string & source_frame,
-    const tf2::TimePoint & time) const override;
+    const tf2::TimePoint & time, tf2::Vector3 & origin_out, tf2::Quaternion & rotation_out, TimePoint & time_out) const override;
 
 
   /**
@@ -172,11 +172,12 @@ public:
     const std::string & reference_point_frame,
     const TimePoint & time, const tf2::Duration & duration) const;
 
+
   bool setTransformTf2(
-    const tf2::Transform & transform_in, const std::string frame_id,
+    const tf2::Vector3 & origin_in, const tf2::Quaternion & rotation_in, const std::string frame_id,
     const std::string child_frame_id, const TimePoint stamp,
     const std::string & authority, bool is_static) {
-      return setTransformImpl(transform_in, frame_id, child_frame_id, stamp, authority, is_static);
+      return setTransformImpl(origin_in, rotation_in, frame_id, child_frame_id, stamp, authority, is_static);
     }
 
   /** \brief Test if a transform is possible
@@ -381,12 +382,16 @@ private:
   std::string allFramesAsStringNoLock() const;
 
   bool setTransformImpl(
-    const tf2::Transform & transform_in, const std::string frame_id,
-    const std::string child_frame_id, const TimePoint stamp,
+    const tf2::Vector3 & origin_in, const tf2::Quaternion & rotation_in,
+    const std::string & frame_id, const std::string & child_frame_id, const TimePoint stamp,
     const std::string & authority, bool is_static);
   void lookupTransformImpl(
     const std::string & target_frame, const std::string & source_frame,
-    const TimePoint & time_in, tf2::Transform & transform, TimePoint & time_out) const;
+    const TimePoint & time_in, tf2::Transform & transform_out, TimePoint & time_out) const;
+  void lookupTransformImpl(
+    const std::string & target_frame, const std::string & source_frame,
+    const TimePoint & time_in, tf2::Vector3 & origin_out, tf2::Quaternion & rotation_out,
+    TimePoint & time_out) const;
 
   void lookupTransformImpl(
     const std::string & target_frame, const TimePoint & target_time,

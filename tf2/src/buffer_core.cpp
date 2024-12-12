@@ -177,8 +177,8 @@ void BufferCore::clear()
 }
 
 bool BufferCore::setTransformImpl(
-  const tf2::Transform & transform_in, const std::string frame_id,
-  const std::string child_frame_id, const TimePoint stamp,
+  const tf2::Vector3 & origin_in, const tf2::Quaternion & rotation_in, const std::string & frame_id,
+  const std::string & child_frame_id, const TimePoint stamp,
   const std::string & authority, bool is_static)
 {
   std::string stripped_frame_id = stripSlash(frame_id);
@@ -207,10 +207,8 @@ bool BufferCore::setTransformImpl(
     error_exists = true;
   }
 
-  const tf2::Quaternion rotation_in = transform_in.getRotation();
-
-  if (std::isnan(transform_in.getOrigin().x()) || std::isnan(transform_in.getOrigin().y()) ||
-    std::isnan(transform_in.getOrigin().z()) ||
+  if (std::isnan(origin_in.x()) || std::isnan(origin_in.y()) ||
+    std::isnan(origin_in.z()) ||
     std::isnan(rotation_in.x()) || std::isnan(rotation_in.y()) ||
     std::isnan(rotation_in.z()) || std::isnan(rotation_in.w()))
   {
@@ -218,7 +216,7 @@ bool BufferCore::setTransformImpl(
       "TF_NAN_INPUT: Ignoring transform for child_frame_id \"%s\" from authority \"%s\" because"
       " of a nan value in the transform (%f %f %f) (%f %f %f %f)",
       stripped_child_frame_id.c_str(), authority.c_str(),
-      transform_in.getOrigin().x(), transform_in.getOrigin().y(), transform_in.getOrigin().z(),
+      origin_in.x(), origin_in.y(), origin_in.z(),
       rotation_in.x(), rotation_in.y(),
       rotation_in.z(), rotation_in.w()
     );
@@ -266,7 +264,7 @@ bool BufferCore::setTransformImpl(
     if (frame->insertData(
         TransformStorage(
           stamp, rotation_in,
-          transform_in.getOrigin(), lookupOrInsertFrameNumber(stripped_frame_id), frame_number)))
+          origin_in, lookupOrInsertFrameNumber(stripped_frame_id), frame_number)))
     {
       frame_authority_[frame_number] = authority;
     } else {
@@ -660,17 +658,12 @@ tf2::Stamped<std::pair<tf2::Vector3, tf2::Vector3>> BufferCore::lookupVelocityTf
     reference_frame);
 }
 
-tf2::Stamped<tf2::Transform>
+void
 BufferCore::lookupTransformTf2(
   const std::string & target_frame, const std::string & source_frame,
-  const TimePoint & time) const
+  const TimePoint & time, tf2::Vector3 & origin_out, tf2::Quaternion & rotation_out, TimePoint & time_out) const
 {
-  tf2::Stamped<tf2::Transform> stamped_transform;
-  lookupTransformImpl(
-    target_frame, source_frame, time, stamped_transform,
-    stamped_transform.stamp_);
-  stamped_transform.frame_id_ = target_frame;
-  return stamped_transform;
+  lookupTransformImpl(target_frame, source_frame, time, origin_out, rotation_out, time_out);
 }
 
 tf2::Stamped<tf2::Transform>
@@ -684,20 +677,59 @@ BufferCore::lookupTransformTf2(
   lookupTransformImpl(
     target_frame, target_time, source_frame, source_time,
     fixed_frame, stamped_transform, stamped_transform.stamp_);
-
   return stamped_transform;
 }
 
+/** \brief Private member function that looks up a transform between two frames
+    * at a given time and return the the transform as a TF2::transform. If a transform is
+    * not possible raise the appropriate error.
+    * \param target_frame -- the name of the target frame which we are transforming to
+    * \param source_frame -- the name of frame we are transforming from
+    * \param time -- the timepoint at which the transform should occur
+    * \param transform_out -- The transform, returned by reference, for the transform from source frame
+    * to target frame at the given time
+    * \param time_out -- the time the transform was computed returned by reference.
+    * \return void, the Transform between the input frames, and the time at which it was calculated are returned by reference
+    */
 void BufferCore::lookupTransformImpl(
   const std::string & target_frame,
   const std::string & source_frame,
-  const TimePoint & time, tf2::Transform & transform,
+  const TimePoint & time, tf2::Transform & transform_out,
+  TimePoint & time_out) const
+{
+  tf2::Quaternion rotation;
+  lookupTransformImpl(
+    target_frame, source_frame, time,
+    transform_out.getOrigin(), rotation, time_out);
+  transform_out.setRotation(rotation);
+}
+
+/** \brief Private member function that looks up a transform between two frames
+    * at a given time and return the the transform as a TF2::transform. If a transform is
+    * not possible raise the appropriate error. The rotation and orientation
+    * components are returned separately by reference.
+    * \param target_frame -- the name of the target frame which we are transforming to
+    * \param source_frame -- the name of frame we are transforming from
+    * \param time -- the timepoint at which the transform should occur
+    * \param origin_out -- the position component of the desired transform
+    *  passed by reference
+    * \param origin_out -- the position component of the desired transform
+    *  passed by reference
+    * \param rotation_out -- the rotation component of the desired transform
+    *  passed by reference
+    * \return void, the Transform between the input frames, and the time at which it was calculated are returned by reference
+    */
+void BufferCore::lookupTransformImpl(
+  const std::string & target_frame,
+  const std::string & source_frame,
+  const TimePoint & time, tf2::Vector3 & origin_out, tf2::Quaternion & rotation_out,
   TimePoint & time_out) const
 {
   std::unique_lock<std::mutex> lock(frame_mutex_);
 
   if (target_frame == source_frame) {
-    transform.setIdentity();
+    rotation_out = Quaternion::getIdentity();
+    origin_out.setValue(tf2Scalar(0.0), tf2Scalar(0.0), tf2Scalar(0.0));
 
     if (time == TimePointZero) {
       CompactFrameID target_id = lookupFrameNumber(target_frame);
@@ -741,8 +773,8 @@ void BufferCore::lookupTransformImpl(
   }
 
   time_out = accum.time;
-  transform.setOrigin(accum.result_vec);
-  transform.setRotation(accum.result_quat);
+  origin_out = accum.result_vec;
+  rotation_out = accum.result_quat;
 }
 
 void BufferCore::lookupTransformImpl(
@@ -1508,7 +1540,6 @@ void BufferCore::_chainAsVector(
 
   output.clear();  // empty vector
 
-  std::stringstream mstream;
   std::unique_lock<std::mutex> lock(frame_mutex_);
 
   TransformAccum accum;

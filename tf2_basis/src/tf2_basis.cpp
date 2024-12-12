@@ -13,20 +13,18 @@ namespace tf2_basis {
     return basis::core::MonotonicTime::FromNanoseconds(time.time_since_epoch().count());
   };
 
-  foxglove::FrameTransform toFoxglove(const tf2::Stamped<tf2::Transform>& in, const std::string& child_frame_id) {
+  foxglove::FrameTransform toFoxglove(tf2::Vector3 origin, tf2::Quaternion rotation, tf2::TimePoint time, const std::string& parent_frame_id, const std::string& child_frame_id) {
     foxglove::FrameTransform out;
 
-    *out.mutable_timestamp() = google::protobuf::util::TimeUtil::NanosecondsToTimestamp(in.stamp_.time_since_epoch().count());
-    out.set_parent_frame_id(in.frame_id_);
+    *out.mutable_timestamp() = google::protobuf::util::TimeUtil::NanosecondsToTimestamp(time.time_since_epoch().count());
+    out.set_parent_frame_id(parent_frame_id);
     out.set_child_frame_id(child_frame_id);
 
-    const auto& origin = in.getOrigin();
     const auto& translation_out = out.mutable_translation();
     translation_out->set_x(origin.getX());
     translation_out->set_y(origin.getY());
     translation_out->set_z(origin.getZ());
     
-    const auto& rotation = in.getRotation();
     const auto& rotation_out = out.mutable_rotation();
     rotation_out->set_x(rotation.getX());
     rotation_out->set_y(rotation.getY());
@@ -36,19 +34,15 @@ namespace tf2_basis {
     return out;
   };
 
-  tf2::Stamped<tf2::Transform> fromFoxglove(const foxglove::FrameTransform& in) {
-    tf2::Stamped<tf2::Transform> out;
-
-    out.stamp_ = tf2::TimePoint(std::chrono::nanoseconds(google::protobuf::util::TimeUtil::TimestampToNanoseconds(in.timestamp())));
-    out.frame_id_ = in.parent_frame_id();
-    out.setOrigin({
+  void fromFoxglove(const foxglove::FrameTransform& in, tf2::Vector3 & origin_out, tf2::Quaternion & rotation_out, tf2::TimePoint & time_out, std::string& frame_id_out) {
+    time_out = tf2::TimePoint(std::chrono::nanoseconds(google::protobuf::util::TimeUtil::TimestampToNanoseconds(in.timestamp())));
+    frame_id_out = in.parent_frame_id();
+    origin_out = {
       in.translation().x(), in.translation().y(), in.translation().z()
-    });
-    out.setRotation({
+    };
+    rotation_out = {
       in.rotation().x(), in.rotation().y(), in.rotation().z(), in.rotation().w()
-    });
-
-    return out;
+    };
   };
 
   foxglove::FrameTransform
@@ -56,14 +50,17 @@ namespace tf2_basis {
     const std::string & target_frame,
     const std::string & source_frame,
     const basis::core::MonotonicTime & time) const {
-        const tf2::Stamped<tf2::Transform> stamped_transform = lookupTransformTf2(
+      tf2::Vector3 origin;
+      tf2::Quaternion rotation;
+      tf2::TimePoint new_time;
+      lookupTransformTf2(
             target_frame,
-            source_frame, fromBasis(time));
+            source_frame, fromBasis(time), origin, rotation, new_time);
 
-        foxglove::FrameTransform msg = toFoxglove(stamped_transform, source_frame);
+      foxglove::FrameTransform msg = toFoxglove(origin, rotation, new_time, target_frame, source_frame);
 
-        return msg;
-    }
+      return msg;
+  }
 
   /** \brief Add transform information to the tf data structure
    * \param transform The transform to store
@@ -75,7 +72,11 @@ namespace tf2_basis {
   bool Buffer::setTransform(
     const foxglove::FrameTransform & transform,
     const std::string & authority, bool is_static) {
-      auto tf2_transform = fromFoxglove(transform);
-      return setTransformTf2(tf2_transform, tf2_transform.frame_id_, transform.child_frame_id(), tf2_transform.stamp_, authority, is_static);
+      tf2::Vector3 origin;
+      tf2::Quaternion rotation;
+      tf2::TimePoint time;
+      std::string frame_id;
+      fromFoxglove(transform, origin, rotation, time, frame_id);
+      return setTransformTf2(origin, rotation, frame_id, transform.child_frame_id(), time, authority, is_static);
     }
 }

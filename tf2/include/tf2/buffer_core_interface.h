@@ -58,6 +58,7 @@ public:
   virtual void
   clear() = 0;
 
+  
   /**
    * \brief Get the transform between two frames by frame ID.
    * \param target_frame The frame to which data should be transformed.
@@ -66,12 +67,14 @@ public:
    * \return The transform between the frames.
    */
   TF2_PUBLIC
-  virtual tf2::Stamped<tf2::Transform>
+  virtual void
   lookupTransformTf2(
     const std::string & target_frame,
     const std::string & source_frame,
-    const tf2::TimePoint & time) const = 0;
+    const tf2::TimePoint & time,
+    tf2::Vector3 & origin_out, tf2::Quaternion & rotation_out, TimePoint & time_out) const = 0;
 
+  // TODO: fix docs
   /**
    * \brief Get the transform between two frames by frame ID assuming fixed frame.
    * \param target_frame The frame to which data should be transformed.

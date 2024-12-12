@@ -2,6 +2,14 @@
 Changelog for package tf2_sensor_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.39.3 (2024-11-25)
+-------------------
+* Add a python3-dev dependency to tf2_py. (`#733 <https://github.com/ros2/geometry2/issues/733>`_)
+* Contributors: Chris Lalancette
+
+0.39.2 (2024-11-20)
+-------------------
+
 0.39.1 (2024-10-15)
 -------------------
 * Remove use of python_cmake_module (`#651 <https://github.com/ros2/geometry2//issues/651>`_)
