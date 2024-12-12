@@ -8,8 +8,8 @@ namespace tf2_basis
 {
 tf2::TimePoint fromBasis(const basis::core::MonotonicTime & time);
 basis::core::MonotonicTime toBasis(const tf2::TimePoint & time);
-foxglove::FrameTransform toFoxglove(const tf2::Stamped<tf2::Transform>& in, const std::string& child_frame_id);
-tf2::Stamped<tf2::Transform> fromFoxglove(const foxglove::FrameTransform& in);
+foxglove::FrameTransform toFoxglove(tf2::Vector3 origin, tf2::Quaternion rotation, tf2::TimePoint time, const std::string& parent_frame_id, const std::string& child_frame_id);
+void fromFoxglove(const foxglove::FrameTransform& in, tf2::Vector3 & origin_out, tf2::Quaternion & rotation_out, tf2::TimePoint & time_out, std::string& frame_id_out);
 
 class Buffer : public tf2::BufferCore {
 public:
