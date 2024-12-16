@@ -1413,7 +1413,7 @@ bool CheckQuaternionNear(
 
 TEST(BufferCore_lookupTransform, ring_45_configuration)
 {
-  double epsilon = 1e-6;
+  const double epsilon = 1e-6;
   rostest::Permuter permuter;
 
   std::vector<builtin_interfaces::msg::Time> times;
