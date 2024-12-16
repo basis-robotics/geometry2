@@ -80,7 +80,7 @@ std::ostream& operator<<(std::ostream& stream, const Quaternion & q)
 }
 
 namespace tf2 {
-std::ostream& operator<<(std::ostream& stream, const Quaternion & q)
+std::ostream & operator<<(std::ostream & stream, const Quaternion & q)
 {
   stream << "{" << q.x() << ", " << q.y() << ", " << q.z() << ", " << q.w() << "}";
   return stream;
