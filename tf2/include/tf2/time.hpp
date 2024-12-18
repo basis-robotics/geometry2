@@ -1,4 +1,4 @@
-// Copyright 2008 Willow Garage, Inc.
+// Copyright 2015-2016, Open Source Robotics Foundation, Inc. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -10,7 +10,7 @@
 //      notice, this list of conditions and the following disclaimer in the
 //      documentation and/or other materials provided with the distribution.
 //
-//    * Neither the name of the Willow Garage, Inc. nor the names of its
+//    * Neither the name of the Open Source Robotics Foundation nor the names of its
 //      contributors may be used to endorse or promote products derived from
 //      this software without specific prior written permission.
 //
@@ -26,34 +26,42 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 
-/** \author Wim Meeussen */
+#ifndef TF2__TIME_HPP_
+#define TF2__TIME_HPP_
 
-#include "tf2_bullet/tf2_bullet.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "gtest/gtest.h"
-#include "tf2/convert.hpp"
+#include <chrono>
+#include <cmath>
+#include <string>
 
-TEST(TfBullet, ConvertVector)
+#include "tf2/visibility_control.h"
+
+namespace tf2
 {
-  btVector3 v(1, 2, 3);
+using Duration = std::chrono::nanoseconds;
+using TimePoint = std::chrono::time_point<std::chrono::system_clock, Duration>;
 
-  btVector3 v1 = v;
-  tf2::convert(v1, v1);
+using IDuration = std::chrono::duration<int, std::nano>;
+// This is the zero time in ROS
+static const TimePoint TimePointZero = TimePoint(IDuration::zero());
 
-  EXPECT_EQ(v, v1);
+TF2_PUBLIC
+TimePoint get_now();
 
-  btVector3 v2(3, 4, 5);
-  tf2::convert(v1, v2);
+TF2_PUBLIC
+Duration durationFromSec(double t_sec);
 
-  EXPECT_EQ(v, v2);
-  EXPECT_EQ(v1, v2);
-}
+TF2_PUBLIC
+TimePoint timeFromSec(double t_sec);
 
+TF2_PUBLIC
+double durationToSec(const tf2::Duration & input);
 
-int main(int argc, char ** argv)
-{
-  testing::InitGoogleTest(&argc, argv);
+TF2_PUBLIC
+double timeToSec(const TimePoint & timepoint);
 
-  int ret = RUN_ALL_TESTS();
-  return ret;
-}
+TF2_PUBLIC
+std::string displayTimePoint(const TimePoint & stamp);
+
+}  // namespace tf2
+
+#endif  // TF2__TIME_HPP_
