@@ -1376,15 +1376,16 @@ TEST(BufferCore_lookupTransform, multi_configuration)
 // https://github.com/google/googletest/blob/main/docs/advanced.md#teaching-googletest-how-to-print-your-values
 namespace geometry_msgs::msg
 {
-std::ostream& operator<<(std::ostream& stream, const Quaternion & q)
+std::ostream & operator<<(std::ostream & stream, const Quaternion & q)
 {
   stream << "{" << q.x << ", " << q.y << ", " << q.z << ", " << q.w << "}";
   return stream;
 }
 }
 
-namespace tf2 {
-std::ostream& operator<<(std::ostream& stream, const Quaternion & q)
+namespace tf2
+{
+std::ostream & operator<<(std::ostream & stream, const Quaternion & q)
 {
   stream << "{" << q.x() << ", " << q.y() << ", " << q.z() << ", " << q.w() << "}";
   return stream;
