@@ -29,8 +29,8 @@
 
 /** \author Tully Foote */
 
-#ifndef TF2__BUFFER_CORE_H_
-#define TF2__BUFFER_CORE_H_
+#ifndef TF2__BUFFER_CORE_HPP_
+#define TF2__BUFFER_CORE_HPP_
 
 #include <algorithm>
 #include <chrono>
@@ -468,4 +468,4 @@ private:
 };
 }  // namespace tf2
 
-#endif  // TF2__BUFFER_CORE_H_
+#endif  // TF2__BUFFER_CORE_HPP_
