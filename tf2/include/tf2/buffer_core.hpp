@@ -44,13 +44,13 @@
 #include <utility>
 #include <vector>
 
-#include "LinearMath/Transform.h"
+#include "LinearMath/Transform.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
 #include "geometry_msgs/msg/velocity_stamped.hpp"
 #include "rcutils/logging_macros.h"
-#include "tf2/buffer_core_interface.h"
-#include "tf2/exceptions.h"
-#include "tf2/transform_storage.h"
+#include "tf2/buffer_core_interface.hpp"
+#include "tf2/exceptions.hpp"
+#include "tf2/transform_storage.hpp"
 #include "tf2/visibility_control.h"
 
 namespace tf2
